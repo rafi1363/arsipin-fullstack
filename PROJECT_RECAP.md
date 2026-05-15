@@ -56,7 +56,9 @@ arsipin-fullstack/
 - [x] Workflow `Security` dengan `Gitleaks` dan `Trivy`
 - [x] Dependabot untuk backend, frontend, dan GitHub Actions
 - [x] Pipeline branch feature/fix/chore/docs saat push
+- [x] Concurrency control untuk membatalkan run lama pada branch/PR yang sama
 - [x] Backend `prisma:generate` lulus
+- [x] Backend `format:check` lulus
 - [x] Backend `typecheck` lulus
 - [x] Frontend `lint` lulus
 - [x] Frontend `build` lulus
@@ -234,6 +236,8 @@ Catatan:
 - workflow tidak lagi terbatas ke `main`
 - branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**` sekarang juga memicu pipeline saat `push`
 - ini membantu melihat status branch sebelum membuat pull request
+- workflow `CI`, `CodeQL`, dan `Security` sekarang memakai concurrency agar run lama pada branch/PR yang sama dibatalkan saat ada push baru
+- job `Backend` sekarang juga menjalankan `bun run format:check`
 - workflow deploy staging dan production sudah ada, tetapi masih bersifat scaffold dan belum terhubung ke provider deployment
 
 ### Status Proteksi Branch `main`
@@ -287,6 +291,7 @@ bun run build
 Hasil:
 
 - `prisma:generate`: lulus
+- `format:check`: lulus
 - `typecheck`: lulus
 - `lint`: lulus
 - `build`: lulus

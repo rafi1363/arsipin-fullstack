@@ -6,7 +6,7 @@ Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen.
 
 - Backend sudah memiliki fondasi API yang nyata dengan auth JWT, protected routes, rate limiting, dan document metadata CRUD.
 - Frontend masih berada di tahap starter `Next.js` dan belum merepresentasikan UI produk Arsipin.
-- Pipeline engineering baseline sudah aktif: CI, CodeQL, Gitleaks, Trivy, Dependabot, dan workflow deploy manual untuk `staging` serta `production`.
+- Pipeline engineering baseline sudah aktif: CI, backend format check, CodeQL, Gitleaks, Trivy, Dependabot, dan workflow deploy manual untuk `staging` serta `production`.
 - Deploy nyata ke provider hosting belum dihubungkan; workflow deploy saat ini masih berupa scaffold dengan guardrail yang sudah disiapkan.
 
 ## Backend Features Today
@@ -99,6 +99,11 @@ Deploy workflow:
 
 - `Deploy Staging`: manual via `workflow_dispatch`, hanya lanjut jika checks utama hijau
 - `Deploy Production`: manual via `workflow_dispatch`, hanya lanjut jika checks utama hijau dan staging sukses untuk SHA yang sama
+
+Pipeline notes:
+
+- `CI`, `CodeQL`, dan `Security` memakai concurrency agar run lama pada branch/PR yang sama dibatalkan saat ada push baru
+- required checks utama saat ini adalah `Backend`, `Frontend`, `Analyze`, `Secret Scan`, dan `Dependency Scan`
 
 ## Security Notes
 

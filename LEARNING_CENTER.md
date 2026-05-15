@@ -360,11 +360,149 @@ Istilah penting:
 - `local environment`
 - `runtime dependency`
 
+### 14. Warning SSL mode pada PostgreSQL connection string
+
+Warning yang muncul saat backend berjalan:
+
+- `sslmode=require` pada stack `pg` saat ini masih diperlakukan seperti alias yang ketat
+- pada major version berikutnya, semantiknya akan mengikuti `libpq` dan bisa memiliki jaminan security yang lebih lemah dibanding perilaku sekarang
+
+Keputusan yang disarankan:
+
+- gunakan `sslmode=verify-full` jika ingin mempertahankan perilaku aman yang eksplisit
+
+Kenapa penting:
+
+- warning ini bukan error
+- aplikasi tetap jalan sekarang
+- tetapi jika dibiarkan, upgrade dependency database di masa depan bisa mengubah perilaku koneksi TLS tanpa disadari
+
+Pelajaran:
+
+- connection string database juga bagian dari security configuration
+- warning runtime yang terkait TLS/SSL sebaiknya tidak diabaikan
+
+Istilah penting:
+
+- `sslmode`
+- `verify-full`
+- `libpq semantics`
+- `TLS verification`
+
+### 15. Sinkronisasi branch lokal dengan GitHub
+
+Kasus yang terjadi:
+
+- branch feature di GitHub sudah hilang
+- tetapi branch lokal dengan nama yang sama masih ada
+
+Perintah yang dijalankan:
+
+```bash
+git fetch --prune
+```
+
+Hasilnya:
+
+- referensi `origin/feature/...` dibersihkan dari lokal
+- tetapi branch lokal tetap ada
+
+Pelajaran utama:
+
+- `git fetch --prune` hanya membersihkan `remote-tracking branches`
+- branch lokal tetap harus dihapus dengan `git branch -d ...` atau `git branch -D ...`
+- `git push origin --delete nama-branch` akan gagal jika branch remote memang sudah tidak ada
+
+Istilah penting:
+
+- `local branch`
+- `remote-tracking branch`
+- `prune`
+- `remote ref does not exist`
+
+### 16. Ruleset GitHub harus menarget branch dengan tepat
+
+Kasus yang terjadi:
+
+- ruleset untuk `main` sudah dibuat dengan target `branch`
+- tetapi GitHub memberi warning bahwa ruleset tidak menarget resource apa pun
+
+Akar masalah:
+
+- field target branch pada ruleset bisa salah walau nama ruleset terlihat benar
+- contoh target yang keliru:
+
+```txt
+refs/heads/refs/heads/main
+```
+
+- target yang benar untuk branch `main` adalah:
+
+```txt
+refs/heads/main
+```
+
+Pelajaran utama:
+
+- ruleset yang `active` belum tentu benar-benar bekerja jika target branch salah
+- warning seperti `This ruleset does not target any resources and will not be applied` harus dibaca harfiah
+- saat memeriksa ruleset export JSON, fokus utama bukan hanya daftar rules, tetapi juga `conditions.ref_name.include`
+
+Implikasi praktis:
+
+- proteksi `main` belum boleh dianggap selesai hanya karena checkbox rule sudah banyak
+- validasi akhir harus memastikan branch target cocok dan direct push ke `main` benar-benar tertolak
+
+Update terbaru:
+
+- export ruleset berikutnya sudah menunjukkan target yang benar:
+
+```txt
+refs/heads/main
+```
+
+- artinya warning `does not target any resources` sudah teratasi
+- setelah target benar, fokus validasi berpindah dari bentuk konfigurasi ke perilaku nyata saat push dan pull request
+
+Istilah penting:
+
+- `ruleset`
+- `ref_name`
+- `target pattern`
+- `branch targeting`
+
+### 17. Proteksi `main` untuk owner repo tetap realistis
+
+Tujuan yang diinginkan:
+
+- bahkan pemilik repo tidak bisa asal push ke `main`
+- semua perubahan normal harus lewat branch dan pull request
+
+Pelajaran:
+
+- GitHub bisa memaksa workflow harian agar `main` tertutup untuk direct push
+- owner/admin tetap bisa mengubah pengaturan repository bila memang sengaja masuk ke Settings
+- jadi tujuan yang realistis adalah mengunci alur kerja normal, bukan membuat owner mustahil mengubah aturan repo miliknya sendiri
+
+Keputusan praktis yang sehat:
+
+- kosongkan bypass actor bila memang tidak ingin ada jalur bypass harian
+- wajibkan pull request dan status checks untuk `main`
+- anggap proteksi branch sebagai pagar operasional, bukan sebagai pengganti governance akun GitHub
+
+Istilah penting:
+
+- `bypass actor`
+- `administrator`
+- `protected branch`
+- `operational control`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
-- Branch protection untuk `main`
+- Finalisasi ruleset atau branch protection untuk `main`
+- Verifikasi bahwa direct push ke `main` benar-benar tertolak dan required checks terbaca di pull request
 - Wajib pull request sebelum merge
 - Required status checks yang relevan dengan kondisi repo
 - Aturan approval bila nanti project mulai kolaboratif

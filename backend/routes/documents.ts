@@ -2,10 +2,11 @@ import { Router } from "express";
 
 import { prisma } from "../lib/prisma";
 import { authMiddleware } from "../middlewares/auth";
+import { protectedRouteLimiter } from "../middlewares/rate-limit";
 
 const documentsRouter = Router();
 
-documentsRouter.post("/", authMiddleware, async (req, res) => {
+documentsRouter.post("/", authMiddleware, protectedRouteLimiter, async (req, res) => {
   try {
     const { title, description, expiredDate } = req.body ?? {};
     const userId = req.user?.userId;
@@ -38,7 +39,7 @@ documentsRouter.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-documentsRouter.get("/", authMiddleware, async (req, res) => {
+documentsRouter.get("/", authMiddleware, protectedRouteLimiter, async (req, res) => {
   try {
     const userId = req.user?.userId;
 

@@ -5,12 +5,13 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 
 import { generateToken } from "../lib/jwt";
+import { authRateLimiter, protectedRouteLimiter } from "../middlewares/rate-limit";
 
 import { authMiddleware } from "../middlewares/auth";
 
 const authRouter = Router();
 
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/register", authRateLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body ?? {};
     if (!name || !email || !password) {
@@ -60,7 +61,7 @@ authRouter.post("/register", async (req, res) => {
   }
 });
 
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/login", authRateLimiter, async (req, res) => {
   try {
     const { email, password } = req.body ?? {};
 
@@ -113,7 +114,7 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.get("/me", authMiddleware, async (req, res) => {
+authRouter.get("/me", authMiddleware, protectedRouteLimiter, async (req, res) => {
   return res.status(200).json({
     message: "Authenticated user",
     user: req.user,

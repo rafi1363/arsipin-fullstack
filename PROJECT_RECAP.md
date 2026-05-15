@@ -87,7 +87,7 @@ Catatan:
 - [x] Endpoint `GET /auth/me`
 - [x] Document create endpoint
 - [x] Document list endpoint
-- [ ] Document detail endpoint
+- [x] Document detail endpoint
 - [ ] Document update endpoint
 - [ ] Document delete endpoint
 - [ ] Search dan filter dokumen
@@ -181,7 +181,8 @@ Catatan:
 - tabel `Document` sudah ada di schema
 - endpoint `POST /documents` sudah aktif untuk membuat dokumen milik user yang login
 - endpoint `GET /documents` sudah aktif untuk mengambil daftar dokumen milik user yang login
-- endpoint detail, update, dan delete masih belum dibuat
+- endpoint detail sudah aktif dan membatasi akses berdasarkan `id` + `userId`
+- update dan delete masih belum dibuat
 
 ### Code Quality Dan Security Feedback
 

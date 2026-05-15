@@ -358,6 +358,26 @@ Istilah penting:
 
 - `clone`
 - `local environment`
+
+### 14. Detail endpoint harus menghormati ownership
+
+Keputusan yang dipakai untuk `GET /documents/:id`:
+
+- query detail memakai `id` dan `userId` sekaligus
+- jika dokumen tidak cocok dengan user login, response tetap `404`
+- route tetap memakai `protectedRouteLimiter` dan `authMiddleware`
+
+Kenapa penting:
+
+- endpoint detail tidak boleh jadi celah untuk menebak apakah dokumen milik user lain ada atau tidak
+- ownership check sebaiknya dilakukan langsung di query, bukan setelah data diambil lalu disaring di memori
+- pola yang sama akan cocok dipakai lagi untuk `PUT` dan `DELETE`
+
+Istilah penting:
+
+- `ownership check`
+- `404 not found`
+- `resource isolation`
 - `runtime dependency`
 
 ### 14. Warning SSL mode pada PostgreSQL connection string

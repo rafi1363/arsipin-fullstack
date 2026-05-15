@@ -2,336 +2,201 @@
 
 Tanggal recap: 2026-05-15
 
-## Ringkasan Project
+## Ringkasan Singkat
 
-Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan dokumen. Target MVP yang sudah disepakati:
+Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan dokumen.
 
-- Authentication: register, login, JWT, protected routes.
-- Document management: create, read, update, delete, search, dan filter dokumen.
-- Expiry tracking: active, expiring soon, dan expired.
-- Dashboard: total dokumen, dokumen aktif, hampir expired, dan expired.
+Kondisi repo saat ini:
 
-Stack saat ini:
+- Backend dasar sudah berjalan dengan Express, Prisma, dan endpoint auth register pertama.
+- Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
+- Pipeline GitHub untuk CI dan security baseline sudah ada dan validasi utama sudah bisa dijalankan.
+- Proteksi branch `main` sudah menarget branch yang benar dan sedang masuk tahap verifikasi perilaku direct push dan pull request.
 
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS 4.
-- Backend: Bun, Express.js, TypeScript.
-- Database: Neon PostgreSQL.
-- ORM: Prisma 7.
-- CI/CD: GitHub Actions.
-- Security automation: CodeQL dan Dependabot.
+## Stack Saat Ini
 
-## Setup Awal Yang Sudah Ada
+- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- Backend: Bun, Express.js, TypeScript
+- Database: Neon PostgreSQL
+- ORM: Prisma 7
+- Automation: GitHub Actions, Dependabot, CodeQL, Gitleaks, Trivy
 
-Struktur project:
+## Struktur Repo
 
 ```txt
 arsipin-fullstack/
 ├── backend/
-└── frontend/
+├── frontend/
+├── .github/
+├── README.md
+├── PROJECT_RECAP.md
+├── LEARNING_CENTER.md
+├── CONTRIBUTING.md
+└── SECURITY.md
 ```
 
-Backend sudah memiliki:
+## Milestone Saat Ini
 
-- Bun project.
-- Dependency utama: `express`, `cors`, `dotenv`, `bcrypt`, `jsonwebtoken`, `@prisma/client`.
-- Dependency dev: `typescript`, `tsx`, `prisma`, type packages.
-- Prisma schema untuk model `User` dan `Document`.
-- Migration awal untuk membuat tabel `User` dan `Document`.
-- Prisma config untuk Prisma v7, dengan `DATABASE_URL` dibaca dari `.env`.
+### Fondasi Repo Dan Tooling
 
-Frontend sudah memiliki:
+- [x] Repository Git lokal di root project
+- [x] Remote GitHub aktif
+- [x] Root `.gitignore` untuk env, build output, cache, dan log
+- [x] `backend/.env.example` tersedia
+- [x] `frontend/.env.example` tersedia
+- [x] `SECURITY.md` tersedia
+- [x] `CONTRIBUTING.md` tersedia
+- [x] `LEARNING_CENTER.md` tersedia
+- [x] PR template tersedia
 
-- Next.js App Router.
-- TypeScript.
-- Tailwind CSS.
-- ESLint.
-- Template awal Next.js.
+### CI/CD Dan Security Baseline
 
-Catatan penting: dokumen setup awal menyebut Express API sudah dibuat, tetapi file aktual `backend/index.ts` saat dicek masih berisi default Bun `console.log("Hello via Bun!")`. Jadi backend Express API masih menjadi milestone berikutnya.
+- [x] Workflow `CI` untuk backend dan frontend
+- [x] Workflow `CodeQL`
+- [x] Workflow `Security` dengan `Gitleaks` dan `Trivy`
+- [x] Dependabot untuk backend, frontend, dan GitHub Actions
+- [x] Backend `prisma:generate` lulus
+- [x] Backend `typecheck` lulus
+- [x] Frontend `lint` lulus
+- [x] Frontend `build` lulus
+- [ ] Automated tests backend/frontend
+- [ ] Deployment workflow
 
-## Git Dan GitHub
+Catatan:
 
-Kita menemukan bahwa sebelum dirapikan, `git status` membaca repository dari folder `/Users/mac`, bukan dari root project Arsipin. Ini membuat Git menampilkan banyak file dari home directory.
+- Build frontend lulus saat dijalankan normal.
+- Saat diuji di sandbox lokal, `next build` sempat gagal karena batasan proses Turbopack, bukan karena source code.
 
-Yang sudah dilakukan:
+### Backend
 
-- Membuat repository Git lokal khusus di root project `arsipin-fullstack`.
-- Menggunakan branch utama `main`.
-- Membuat commit awal:
+- [x] Bootstrap Express server
+- [x] Middleware `cors` dan `express.json()`
+- [x] Route `GET /`
+- [x] Route `GET /health`
+- [x] Shared Prisma client di `backend/lib/prisma.ts`
+- [x] Prisma schema untuk `User` dan `Document`
+- [x] Migration awal database
+- [x] Runtime Prisma 7 memakai `@prisma/adapter-pg`
+- [x] Endpoint `POST /auth/register`
+- [ ] Endpoint `POST /auth/login`
+- [ ] JWT token generation
+- [ ] JWT auth middleware / protected routes
+- [ ] CRUD dokumen
+- [ ] Search dan filter dokumen
+- [ ] Expiry tracking
+- [ ] Dashboard summary endpoint
+
+### Frontend
+
+- [x] Next.js App Router
+- [x] TypeScript
+- [x] Tailwind CSS
+- [x] ESLint
+- [x] Metadata dasar Arsipin
+- [ ] UI autentikasi Arsipin
+- [ ] Integrasi frontend ke backend API
+- [ ] Dashboard Arsipin
+- [ ] Halaman/manajemen dokumen
+
+Catatan:
+
+- `frontend/src/app/page.tsx` masih template awal Next.js.
+- Frontend belum merepresentasikan milestone produk Arsipin.
+
+## Progress Implementasi Yang Sudah Nyata
+
+### Backend Express
+
+File utama:
+
+- `backend/index.ts`
+- `backend/lib/prisma.ts`
+- `backend/routes/auth.ts`
+
+Yang sudah aktif:
+
+- server Express berjalan
+- `GET /` mengembalikan pesan backend aktif
+- `GET /health` mengembalikan status `ok`
+- router `/auth` sudah terpasang
+
+### Auth Register
+
+Flow `POST /auth/register` yang sudah ada:
+
+1. membaca `name`, `email`, `password` dari request body
+2. memvalidasi field wajib
+3. mengecek email duplikat
+4. meng-hash password dengan `bcrypt`
+5. menyimpan user lewat Prisma
+6. mengembalikan data aman tanpa password hash
+
+Status fitur auth saat ini:
+
+- register: sudah ada
+- login: belum ada
+- JWT: belum ada
+- protected route: belum ada
+
+### Prisma Dan Database
+
+Yang sudah tersedia:
+
+- model `User`
+- model `Document`
+- migration awal
+- `prisma.config.ts`
+- adapter PostgreSQL untuk runtime Prisma 7
+
+Catatan:
+
+- tabel `Document` sudah ada di schema, tetapi endpoint CRUD dokumen belum dibuat.
+
+## Progress GitHub Workflow Dan Protection
+
+### Workflow Yang Sudah Ada
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/codeql.yml`
+- `.github/workflows/security.yml`
+- `.github/dependabot.yml`
+
+Job/check penting yang dipakai saat ini:
+
+- `Backend`
+- `Frontend`
+- `Analyze`
+- `Secret Scan`
+- `Dependency Scan`
+
+### Status Proteksi Branch `main`
+
+Tujuan yang sedang dikerjakan:
+
+- semua perubahan ke `main` harus lewat pull request
+- direct push ke `main` harus ditolak
+- status checks harus lulus sebelum merge
+- bypass actor dikosongkan
+
+Status saat ini:
+
+- ruleset GitHub untuk `main` sudah `active`
+- export ruleset terbaru sudah menunjukkan target yang benar:
 
 ```txt
-66ccfe3 Initial Arsipin fullstack setup
+refs/heads/main
 ```
 
-- Menghubungkan repo lokal ke GitHub:
+- bypass actor kosong
+- rule pull request dan required status checks sudah ada
+- rule linear history, no force push, dan block deletion juga sudah ada
 
-```txt
-https://github.com/rafi1363/arsipin-fullstack
-```
+Kesimpulan:
 
-- Push ke `main` berhasil setelah autentikasi GitHub diselesaikan.
+- ruleset `main` sudah menarget branch yang benar
+- tahap berikutnya adalah verifikasi langsung bahwa direct push ke `main` benar-benar tertolak dan PR membaca required checks dengan benar
 
-Masalah GitHub auth yang sempat muncul:
-
-- Password biasa tidak bisa dipakai untuk `git push` via HTTPS.
-- Solusinya memakai Personal Access Token atau GitHub CLI.
-- Setelah token/credential benar, push ke GitHub berhasil.
-
-## File Security Dan Ignore
-
-Kita menambahkan root `.gitignore` agar file sensitif dan hasil build tidak masuk Git.
-
-File dan folder yang di-ignore:
-
-- `.env` dan `.env.*`
-- `backend/.env`
-- `frontend/.env`
-- `node_modules/`
-- `frontend/.next/`
-- build output seperti `dist/`, `out/`, `build/`
-- cache dan log
-- `.DS_Store`
-- `.vercel/`
-
-Kita juga menambahkan file contoh environment:
-
-- `backend/.env.example`
-- `frontend/.env.example`
-
-Isi secret asli tetap tidak masuk Git. File `backend/.env` tetap ignored.
-
-Kita menambahkan `SECURITY.md` dengan baseline security:
-
-- Jangan commit secret.
-- Hash password dengan `bcrypt`.
-- Pakai `JWT_SECRET` kuat.
-- Validasi input.
-- Jangan return password hash ke frontend.
-- Batasi CORS di production.
-- Gunakan HTTPS saat deploy.
-- Aktifkan Dependabot dan CodeQL.
-
-## CI/CD Dan Automation
-
-Kita menambahkan GitHub Actions CI:
-
-```txt
-.github/workflows/ci.yml
-```
-
-Workflow `CI` berjalan pada:
-
-- push ke `main`
-- pull request ke `main`
-
-Job backend:
-
-- checkout repo
-- setup Bun
-- install dependency dengan `bun install --frozen-lockfile`
-- generate Prisma Client
-- run backend typecheck
-
-Job frontend:
-
-- checkout repo
-- setup Bun
-- install dependency dengan `bun install --frozen-lockfile`
-- run lint
-- run build
-
-Kita juga menambahkan CodeQL:
-
-```txt
-.github/workflows/codeql.yml
-```
-
-CodeQL berjalan pada:
-
-- push ke `main`
-- pull request ke `main`
-- jadwal mingguan
-
-Kita menambahkan Dependabot:
-
-```txt
-.github/dependabot.yml
-```
-
-Dependabot memantau:
-
-- dependency Bun di `/backend`
-- dependency Bun di `/frontend`
-- GitHub Actions di root repo
-
-## Perbaikan Agar CI Stabil
-
-Backend typecheck awalnya gagal karena TypeScript belum mengenali global Bun seperti `console` dan `process`.
-
-Perbaikan:
-
-- Menambahkan `types: ["bun"]` di `backend/tsconfig.json`.
-- Menambahkan script:
-
-```json
-"typecheck": "tsc --noEmit"
-```
-
-Frontend build awalnya gagal karena `next/font/google` mencoba fetch Google Fonts. Untuk membuat CI lebih stabil, kita menghapus dependency build ke Google Fonts dan memakai system font.
-
-Perbaikan:
-
-- Menghapus import `next/font/google` dari `frontend/src/app/layout.tsx`.
-- Mengubah metadata menjadi Arsipin.
-- Mengatur font system di `frontend/src/app/globals.css`.
-
-Catatan lokal:
-
-- `bun run build` untuk Next.js sempat gagal di sandbox karena Turbopack perlu membuat proses lokal.
-- Build berhasil saat dijalankan di luar sandbox.
-- Di GitHub Actions, build berjalan hijau.
-
-## Dependabot Dan CI Merah
-
-Setelah push awal, Dependabot membuka beberapa PR update dependency.
-
-CI merah terjadi pada PR:
-
-```txt
-Bump eslint from 9.39.4 to 10.3.0 in /frontend
-```
-
-Keputusan:
-
-- Tidak melakukan upgrade agresif ke ESLint 10.
-- Menahan major update ESLint karena kombinasi project saat ini stabil dengan `eslint@9` dan `eslint-config-next@16.2.6`.
-
-Perubahan yang diterapkan:
-
-```yaml
-ignore:
-  - dependency-name: "eslint"
-    versions:
-      - ">=10"
-```
-
-Hasil:
-
-- Dependabot tidak lagi membuka PR ESLint v10 untuk sementara.
-
-## Update Baru Dari Sesi Ini
-
-Fokus sesi ini adalah mulai membangun baseline engineering yang lebih siap untuk dipakai serius, walau project masih solo development.
-
-Keputusan workflow:
-
-- `main` diperlakukan sebagai branch stabil.
-- Perubahan baru sebaiknya dikerjakan di branch singkat per topik, bukan branch permanen `backend` dan `frontend`.
-- Contoh branch yang disarankan:
-  - `feature/auth-backend`
-  - `feature/document-list-ui`
-  - `chore/security-baseline`
-  - `docs/learning-center`
-
-Dokumentasi baru yang ditambahkan:
-
-- `LEARNING_CENTER.md` sebagai pusat pembelajaran teknis dan operasional.
-- `CONTRIBUTING.md` untuk aturan branch, PR, dan validasi kerja.
-- `.github/pull_request_template.md` untuk menjaga checklist perubahan tetap konsisten.
-
-Perubahan workflow GitHub:
-
-- `CI` sekarang memiliki permission minimum `contents: read`.
-- Ditambahkan `timeout-minutes` agar job tidak menggantung terlalu lama.
-- Ditambahkan workflow baru:
-
-```txt
-.github/workflows/security.yml
-```
-
-Isi workflow `Security`:
-
-- Secret scanning dengan `Gitleaks`
-- Dependency/filesystem scanning dengan `Trivy`
-
-Tujuan perubahan ini:
-
-- Menangkap secret yang tidak sengaja ter-commit lebih cepat
-- Menambah lapisan scanning selain CodeQL dan Dependabot
-- Melatih kebiasaan security-by-default sejak tahap awal project
-
-Hal yang masih perlu disetel manual di GitHub UI:
-
-- Branch protection untuk `main`
-- Require pull request before merge
-- Required status checks: `CI`, `CodeQL`, dan `Security`
-- Block force pushes
-- GitHub Environments untuk staging/production
-- Secret scanning push protection bila fitur tersedia di plan GitHub
-
-Catatan Git:
-
-- File `PROJECT_RECAP.md` masih untracked sebelum sesi ini.
-- Untuk update besar berikutnya, disarankan kerja di branch sesuai topik dan push branch tersebut ke GitHub agar histori perubahan lebih rapi.
-
-## Perbaikan Pipeline Security
-
-Setelah workflow `Security` ditambahkan, job `Dependency Scan` gagal saat memuat Trivy action.
-
-Error utama:
-
-- GitHub Actions tidak bisa me-resolve `aquasecurity/trivy-action@0.33.1`
-
-Perbaikan:
-
-- Mengganti referensi action di `.github/workflows/security.yml` dari:
-
-```txt
-aquasecurity/trivy-action@0.33.1
-```
-
-menjadi:
-
-```txt
-aquasecurity/trivy-action@v0.36.0
-```
-
-Alasan:
-
-- Dokumentasi resmi repository `aquasecurity/trivy-action` dan GitHub Marketplace saat ini memakai `v0.36.0`.
-- Ini juga menghindari kegagalan akibat tag action yang tidak cocok dengan format versi upstream saat ini.
-
-Pelajaran operasional:
-
-- Jika GitHub Actions gagal di tahap `unable to resolve action`, verifikasi nama action dan tag versi ke sumber resmi terlebih dahulu.
-- Untuk action yang penting secara security, pertimbangkan pin ke commit SHA immutable setelah versi stabil dipilih.
-- PR merah tidak dilanjutkan.
-
-## Dependabot Updates Yang Sudah Masuk Main
-
-Update Dependabot hijau sudah dimasukkan ke `main`:
-
-- `actions/checkout@v6`
-- `react@19.2.6`
-- `react-dom@19.2.6`
-- `typescript@^6`
-- `@types/node@^25`
-
-Catatan proses:
-
-- GitHub CLI tidak bisa merge PR via API karena token tidak punya permission `mergePullRequest`.
-- Solusi yang dipakai: fetch branch Dependabot, merge lokal ke `main`, lalu push.
-- Saat merge `react-dom`, ada konflik kecil di `frontend/package.json` dan `frontend/bun.lock`.
-- Konflik diselesaikan dengan kombinasi final `react@19.2.6` dan `react-dom@19.2.6`.
-
-Status akhir:
-
-- Open PR Dependabot: kosong.
-- CI di `main`: hijau.
-- CodeQL di `main`: hijau.
-- Working tree lokal: bersih saat terakhir dicek.
-
-## Validasi Yang Sudah Dijalankan
+## Validasi Yang Terakhir Diverifikasi
 
 Backend:
 
@@ -349,308 +214,29 @@ bun run lint
 bun run build
 ```
 
-Semua validasi tersebut sudah berhasil.
-
-## Kondisi Project Saat Ini
-
-Project sudah memiliki fondasi:
-
-- Git lokal rapi.
-- Repo GitHub aktif.
-- CI GitHub Actions aktif.
-
-## Branch Protection Dan Workflow Git
-
-`main` sekarang sudah diproteksi di GitHub dengan model classic branch protection.
-
-Rule penting yang aktif:
-
-- Pull request wajib sebelum merge
-- Status checks wajib lulus sebelum merge
-- Branch harus up to date sebelum merge
-- Force push tidak diizinkan
-- Delete branch `main` tidak diizinkan
-
-Status checks yang dipakai diarahkan agar lebih lengkap, tidak hanya scan security:
-
-- `Backend`
-- `Frontend`
-- `CodeQL`
-- `Dependency Scan`
-- `Secret Scan`
-
-Catatan evaluasi:
-
-- Branch protection untuk solo developer tetap berguna karena memaksa disiplin PR dan validasi.
-- Approval review tidak harus dijadikan kewajiban di fase awal jika justru menghambat alur kerja solo.
-
-## Pembersihan Branch Remote
-
-Ada branch lama `feature/backend-express/api` yang sudah dihapus lokal, tetapi masih ada di GitHub.
-
-Perintah yang dipakai:
-
-```bash
-git push origin --delete feature/backend-express/api
-git fetch --prune
-```
-
-Pelajaran:
-
-- `git branch -d` hanya menghapus branch lokal
-- `git push origin --delete ...` menghapus branch di remote GitHub
-- `git fetch --prune` membersihkan referensi remote yang basi di lokal
-
-## Setup Prettier Untuk Backend
-
-Karena format on save belum berjalan, dilakukan setup formatter minimum untuk backend.
-
-Yang sudah ditambahkan:
-
-- `prettier` di `backend/devDependencies`
-- script `format`
-- script `format:check`
-- file workspace `.vscode/settings.json`
-- konfigurasi `backend/.prettierrc` tetap dipakai
-
-Isi penting workspace settings:
-
-- `editor.formatOnSave: true`
-- `editor.defaultFormatter: esbenp.prettier-vscode`
-- formatter default diarahkan untuk TypeScript, JavaScript, dan JSON
-
-Keputusan implementasi:
-
-- Untuk sekarang cukup fokus ke backend dan workspace setting
-- Tidak perlu menambahkan semua tooling formatter sekaligus ke seluruh repo jika belum dibutuhkan
-
-## Langkah Berikutnya Yang Sudah Disepakati
-
-Setelah fondasi GitHub dan tooling dasar cukup rapi, langkah belajar berikutnya adalah:
-
-- lanjut di branch `feature/auth-backend`
-- ubah `backend/index.ts` dari placeholder menjadi Express server minimal
-- buat route `GET /`
-- buat route `GET /health`
-- jalankan `bun run dev`, `bun run prisma:generate`, dan `bun run typecheck`
-
-Pendekatan kerja yang dipilih:
-
-- user mengetik kode sendiri
-- assistant memberi instruksi, penjelasan struktur, dan review
-- setiap pembelajaran baru dicatat di `LEARNING_CENTER.md`
-- setiap perubahan penting diringkas di `PROJECT_RECAP.md`
-
-## Progress Backend Express
-
-Milestone backend awal sudah berhasil dijalankan.
-
-Yang sudah selesai:
-
-- `backend/index.ts` diubah dari placeholder menjadi Express server minimal
-- middleware `cors` dan `express.json()` sudah dipakai
-- route `GET /` mengembalikan pesan:
-
-```json
-{"message":"Arsipin backend is running"}
-```
-
-- route `GET /health` mengembalikan:
-
-```json
-{"status":"ok"}
-```
-
-Validasi yang berhasil dijalankan:
-
-```bash
-curl http://localhost:5000/
-curl http://localhost:5000/health
-cd backend
-bun run prisma:generate
-bun run typecheck
-```
-
 Hasil:
 
-- endpoint root berhasil
-- endpoint health berhasil
-- Prisma Client berhasil di-generate
-- TypeScript typecheck lulus
+- `prisma:generate`: lulus
+- `typecheck`: lulus
+- `lint`: lulus
+- `build`: lulus
 
-## Progress GitHub Dan PR
+## Catatan Penting Yang Masih Relevan
 
-User sudah:
-
-- push perubahan backend ke branch terbaru
-- membuat pull request ke `main`
-
-PR yang terdeteksi:
-
-- `#8` dari branch `feature/auth-backend`
-
-## Langkah Belajar Berikutnya
-
-Setelah bootstrap backend berjalan, fokus berikutnya adalah auth register dengan struktur file yang lebih rapi.
-
-File yang disiapkan user:
-
-- `backend/lib/prisma.ts`
-- `backend/routes/auth.ts`
-
-Tujuan tahap berikutnya:
-
-- membuat shared Prisma client
-- menambahkan router auth
-- membuat endpoint `POST /auth/register`
-- validasi input `name`, `email`, dan `password`
-- hash password dengan `bcrypt`
-- simpan user ke database tanpa mengembalikan password hash
-
-Catatan pembelajaran:
-
-- user lebih terbiasa dengan JavaScript daripada TypeScript
-- pendekatan yang dipilih adalah belajar sambil mengetik sendiri
-- assistant memberi contoh kode, penjelasan struktur, dan review hasil implementasi
-
-## Prisma 7 Runtime Fix
-
-Saat route auth mulai memakai Prisma, backend sempat gagal dijalankan.
-
-Error utama:
-
-- `PrismaClientInitializationError`
-- `PrismaClient` pada runtime meminta `PrismaClientOptions` yang valid
-
-Akar masalah:
-
-- project memakai Prisma 7
-- Prisma CLI sudah dikonfigurasi lewat `prisma.config.ts`
-- tetapi Prisma Client runtime untuk PostgreSQL membutuhkan driver adapter
-
-Perbaikan yang diterapkan:
-
-- install `@prisma/adapter-pg`
-- install `pg`
-- update `backend/lib/prisma.ts` agar memakai `PrismaPg`
-- inisialisasi client menjadi `new PrismaClient({ adapter })`
-
-Hasil:
-
-- `bun run dev` kembali berjalan normal
-- backend bisa mengakses database Neon melalui Prisma 7
-
-## Progress Auth Register
-
-Tahap auth register pertama berhasil dijalankan dengan struktur file terpisah.
-
-File yang dipakai:
-
-- `backend/index.ts`
-- `backend/lib/prisma.ts`
-- `backend/routes/auth.ts`
-
-Flow endpoint `POST /auth/register`:
-
-- baca `name`, `email`, `password`
-- validasi field wajib
-- cek duplicate email
-- hash password dengan `bcrypt`
-- simpan user ke database lewat Prisma
-- kembalikan data user tanpa password hash
-
-Hasil testing sukses:
-
-```bash
-curl -X POST http://localhost:5000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Rafi","email":"rafi@example.com","password":"password123"}'
-```
-
-Response yang diterima:
-
-```json
-{
-  "message": "User Registered successfully",
-  "user": {
-    "id": "cmp6jwcua0000b11y2hvcgzz7",
-    "name": "Rafi",
-    "email": "rafi@example.com",
-    "createdAt": "2026-05-15T06:43:07.906Z"
-  }
-}
-```
-
-Status validasi:
-
-- `bun run dev`: berhasil
-- `bun run prisma:generate`: berhasil
-- `bun run typecheck`: berhasil
-- `POST /auth/register`: berhasil
-
-## Catatan Multi-Device
-
-Project ini bisa di-clone ke device lain seperti PC, tetapi environment lokal tetap perlu disiapkan ulang.
-
-Yang perlu dilakukan di device baru:
-
-- clone repository
-- install Bun
-- jalankan `bun install` di `backend` dan `frontend`
-- salin `.env.example` menjadi file `.env` yang sesuai
-- jalankan `bun run prisma:generate`
-
-Yang otomatis ikut saat clone:
-
-- source code terbaru
-- workflow GitHub
-- dokumentasi project
-- histori commit dan branch remote
-- CodeQL aktif.
-- Dependabot aktif.
-- Secret tidak masuk Git.
-- `.env.example` tersedia.
-- Dependency utama sudah diperbarui lewat Dependabot yang hijau.
-
-Branch lokal saat recap dibuat:
-
-```txt
-main
-```
-
-Remote:
-
-```txt
-origin https://github.com/rafi1363/arsipin-fullstack.git
-```
+- `jsonwebtoken` sudah terpasang sebagai dependency, tetapi belum dipakai di implementasi runtime saat ini.
+- `backend/.env` tetap tidak dibaca atau disalin ke dokumentasi agar secret aman.
+- Workspace settings editor ada secara lokal, tetapi `.vscode/` tetap di-ignore dari Git.
+- `backend/README.md` dan `frontend/README.md` masih berisi template awal dan belum sepenuhnya mengikuti kondisi implementasi terbaru.
 
 ## Next Milestone Yang Disarankan
 
-Langkah berikutnya adalah membuat backend Express API dasar di branch feature baru.
+Urutan yang paling masuk akal dari kondisi sekarang:
 
-Branch yang disarankan:
-
-```bash
-git checkout -b feature/backend-express-api
-```
-
-Target backend API dasar:
-
-- Ubah `backend/index.ts` dari default Bun menjadi Express server.
-- Tambahkan `cors`, `dotenv`, dan JSON middleware.
-- Tambahkan endpoint:
-  - `GET /`
-  - `GET /health`
-- Siapkan struktur folder backend awal.
-- Pastikan tetap lolos:
-  - `bun run typecheck`
-  - `bun run prisma:generate`
-  - GitHub CI
-
-Setelah backend dasar stabil, lanjut milestone:
-
-1. Prisma Client singleton.
-2. Auth register/login.
-3. JWT middleware.
-4. Document CRUD.
-5. Dashboard frontend dan integrasi API.
+1. Verifikasi ruleset/proteksi `main` dengan uji direct push dan pull request.
+2. Buat endpoint `POST /auth/login`.
+3. Tambahkan JWT token generation dan auth middleware.
+4. Buat endpoint document CRUD.
+5. Tambahkan search, filter, dan expiry tracking.
+6. Bangun UI frontend Arsipin dan integrasi ke backend.
+7. Tambahkan automated tests.
+8. Siapkan deployment workflow.

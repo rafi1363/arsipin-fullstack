@@ -3,6 +3,8 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { authMiddleware } from "../middlewares/auth";
 import { protectedRouteLimiter } from "../middlewares/rate-limit";
+import { isValidDateInput, normalizeString, toDate } from "../lib/validation";
+import { sendError } from "../lib/http";
 
 const documentsRouter = Router();
 
@@ -22,23 +24,27 @@ documentsRouter.post(
       const { title, description, expiredDate } = req.body ?? {};
       const userId = req.user?.userId;
 
+      const normalizedTitle = normalizeString(title);
+      const normalizedDescription =
+        description === undefined ? undefined : normalizeString(description);
+
       if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+        return sendError(res, 401, "Unauthorized");
       }
 
-      if (!title || !expiredDate) {
-        return res.status(400).json({
-          message: "Title and Expired Date are required",
-        });
+      if (!normalizedTitle || expiredDate === undefined) {
+        return sendError(res, 400, "Title and expired date are required");
+      }
+
+      if (!isValidDateInput(expiredDate)) {
+        return sendError(res, 400, "Expired date must be a valid date string");
       }
 
       const document = await prisma.document.create({
         data: {
-          title,
-          description,
-          expiredDate: new Date(expiredDate),
+          title: normalizedTitle,
+          description: normalizedDescription,
+          expiredDate: toDate(expiredDate),
           userId,
         },
       });
@@ -49,9 +55,7 @@ documentsRouter.post(
       });
     } catch (_error) {
       console.error("Create document error: ", _error);
-      return res.status(500).json({
-        message: "Internal Server Error",
-      });
+      return sendError(res, 500, "Internal Server Error");
     }
   },
 );
@@ -65,9 +69,7 @@ documentsRouter.get(
       const userId = req.user?.userId;
 
       if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+        return sendError(res, 401, "Unauthorized");
       }
 
       const documents = await prisma.document.findMany({
@@ -85,9 +87,7 @@ documentsRouter.get(
       });
     } catch (error) {
       console.error("Fetch documents error: ", error);
-      return res.status(500).json({
-        message: "Internal Server Error",
-      });
+      return sendError(res, 500, "Internal Server Error");
     }
   },
 );
@@ -102,15 +102,11 @@ documentsRouter.get(
       const userId = req.user?.userId;
 
       if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+        return sendError(res, 401, "Unauthorized");
       }
 
       if (!documentId) {
-        return res.status(400).json({
-          message: "Document id is required",
-        });
+        return sendError(res, 400, "Document id is required");
       }
 
       const document = await prisma.document.findFirst({
@@ -121,9 +117,7 @@ documentsRouter.get(
       });
 
       if (!document) {
-        return res.status(404).json({
-          message: "Document not found",
-        });
+        return sendError(res, 404, "Document not found");
       }
 
       return res.status(200).json({
@@ -132,9 +126,7 @@ documentsRouter.get(
       });
     } catch (error) {
       console.error("Fetch document detail error: ", error);
-      return res.status(500).json({
-        message: "Internal Server Error",
-      });
+      return sendError(res, 500, "Internal Server Error");
     }
   },
 );
@@ -149,22 +141,29 @@ documentsRouter.put(
       const userId = req.user?.userId;
       const { title, description, expiredDate } = req.body ?? {};
 
+      const normalizedTitle =
+        title === undefined ? undefined : normalizeString(title);
+      const normalizedDescription =
+        description === undefined ? undefined : normalizeString(description);
+
       if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+        return sendError(res, 401, "Unauthorized");
       }
 
       if (!documentId) {
-        return res.status(400).json({
-          message: "Document id is required",
-        });
+        return sendError(res, 400, "Document id is required");
       }
 
-      if (!title && !description && !expiredDate) {
-        return res.status(400).json({
-          message: "At least one field is required to update",
-        });
+      if (!title === undefined && description === undefined) {
+        return sendError(res, 400, "At least one field is required to update");
+      }
+
+      if (title !== undefined && normalizedTitle) {
+        return sendError(res, 400, "Title cannot be empty");
+      }
+
+      if (expiredDate !== undefined && !isValidDateInput(expiredDate)) {
+        return sendError(res, 400, "Expired date must be a valid date string");
       }
 
       const existingDocument = await prisma.document.findFirst({
@@ -175,9 +174,7 @@ documentsRouter.put(
       });
 
       if (!existingDocument) {
-        return res.status(404).json({
-          message: "Document not found",
-        });
+        return sendError(res, 404, "Document not found");
       }
 
       const updatedDocument = await prisma.document.update({
@@ -185,8 +182,10 @@ documentsRouter.put(
           id: documentId,
         },
         data: {
-          ...(title !== undefined ? { title } : {}),
-          ...(description !== undefined ? { description } : {}),
+          ...(normalizedTitle !== undefined ? { title: normalizedTitle } : {}),
+          ...(description !== undefined
+            ? { description: normalizedDescription }
+            : {}),
           ...(expiredDate !== undefined
             ? { expiredDate: new Date(expiredDate) }
             : {}),
@@ -199,9 +198,7 @@ documentsRouter.put(
       });
     } catch (error) {
       console.error("Update document error: ", error);
-      return res.status(500).json({
-        message: "Internal Server Error",
-      });
+      return sendError(res, 500, "Internal Server Error");
     }
   },
 );
@@ -216,15 +213,11 @@ documentsRouter.delete(
       const userId = req.user?.userId;
 
       if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+        return sendError(res, 401, "Unauthorized");
       }
 
       if (!documentId) {
-        return res.status(400).json({
-          message: "Document id is required",
-        });
+        return sendError(res, 400, "Document id is required");
       }
 
       const existingDocument = await prisma.document.findFirst({
@@ -232,9 +225,7 @@ documentsRouter.delete(
       });
 
       if (!existingDocument) {
-        return res.status(404).json({
-          message: "Document not found",
-        });
+        return sendError(res, 404, "Document not found");
       }
 
       await prisma.document.delete({
@@ -246,9 +237,7 @@ documentsRouter.delete(
       });
     } catch (error) {
       console.error("Delete document error: ", error);
-      return res.status(500).json({
-        message: "Internal Server Error",
-      });
+      return sendError(res, 500, "Internal Server Error");
     }
   },
 );

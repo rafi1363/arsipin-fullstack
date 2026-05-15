@@ -707,12 +707,12 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 ## Daftar Belajar Berikutnya
 
-- Melengkapi document CRUD
 - Menambahkan validasi input yang lebih kuat
+- Menambahkan search, filter, dan dashboard summary
 - Menentukan desain upload file dan storage
 - Menambahkan status `expiring_soon` dan `expired`
 - Menambahkan automated tests
-- Menambahkan deployment workflow
+- Menghubungkan workflow deploy ke target hosting final
 - Menentukan target host final untuk staging dan production
 - Belajar Docker untuk packaging aplikasi
 - Belajar monitoring, logging, health check, dan backup

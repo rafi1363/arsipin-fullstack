@@ -1,10 +1,12 @@
 name: Deploy Staging
 
 on:
-  push:
-    branches:
-      - staging
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or commit to deploy"
+        required: true
+        default: "main"
 
 permissions:
   contents: read
@@ -23,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -39,6 +43,11 @@ jobs:
 
       - name: Typecheck backend
         working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: 5000
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
         run: bun run typecheck
 
       - name: Install frontend dependencies
@@ -52,4 +61,4 @@ jobs:
         run: bun run build
 
       - name: Deploy staging
-        run: echo "Replace this with your staging deployment command"
+        run: echo "Replace this step with your staging deployment command"

@@ -6,6 +6,13 @@ import { protectedRouteLimiter } from "../middlewares/rate-limit";
 
 const documentsRouter = Router();
 
+function getDocumentId(param: string | string[] | undefined) {
+  if (Array.isArray(param)) {
+    return param[0];
+  }
+  return param;
+}
+
 documentsRouter.post(
   "/",
   protectedRouteLimiter,
@@ -91,9 +98,7 @@ documentsRouter.get(
   authMiddleware,
   async (req, res) => {
     try {
-      const documentId = Array.isArray(req.params.id)
-        ? req.params.id[0]
-        : req.params.id;
+      const documentId = getDocumentId(req.params.id);
       const userId = req.user?.userId;
 
       if (!userId) {
@@ -127,6 +132,120 @@ documentsRouter.get(
       });
     } catch (error) {
       console.error("Fetch document detail error: ", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+  },
+);
+
+documentsRouter.put(
+  "/:id",
+  protectedRouteLimiter,
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const documentId = getDocumentId(req.params.id);
+      const userId = req.user?.userId;
+      const { title, description, expiredDate } = req.body ?? {};
+
+      if (!userId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
+      if (!documentId) {
+        return res.status(400).json({
+          message: "Document id is required",
+        });
+      }
+
+      if (!title && !description && !expiredDate) {
+        return res.status(400).json({
+          message: "At least one field is required to update",
+        });
+      }
+
+      const existingDocument = await prisma.document.findFirst({
+        where: {
+          id: documentId,
+          userId,
+        },
+      });
+
+      if (!existingDocument) {
+        return res.status(404).json({
+          message: "Document not found",
+        });
+      }
+
+      const updatedDocument = await prisma.document.update({
+        where: {
+          id: documentId,
+        },
+        data: {
+          ...(title !== undefined ? { title } : {}),
+          ...(description !== undefined ? { description } : {}),
+          ...(expiredDate !== undefined
+            ? { expiredDate: new Date(expiredDate) }
+            : {}),
+        },
+      });
+
+      return res.status(200).json({
+        message: "Document updated successfully",
+        document: updatedDocument,
+      });
+    } catch (error) {
+      console.error("Update document error: ", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+  },
+);
+
+documentsRouter.delete(
+  "/:id",
+  protectedRouteLimiter,
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const documentId = getDocumentId(req.params.id);
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
+      if (!documentId) {
+        return res.status(400).json({
+          message: "Document id is required",
+        });
+      }
+
+      const existingDocument = await prisma.document.findFirst({
+        where: { id: documentId, userId },
+      });
+
+      if (!existingDocument) {
+        return res.status(404).json({
+          message: "Document not found",
+        });
+      }
+
+      await prisma.document.delete({
+        where: { id: documentId },
+      });
+
+      return res.status(200).json({
+        message: "Document deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete document error: ", error);
       return res.status(500).json({
         message: "Internal Server Error",
       });

@@ -14,17 +14,22 @@ Yang sudah tersedia:
 - `POST /documents`
 - `GET /documents`
 - `GET /documents/:id`
+- `PUT /documents/:id`
+- `DELETE /documents/:id`
 - JWT helper reusable
 - auth middleware
 - rate limiting dasar untuk route auth dan route protected
 
 Yang belum tersedia:
 
-- `PUT /documents/:id`
-- `DELETE /documents/:id`
 - search/filter document
 - expiry tracking berbasis status
 - upload file arsip asli
+
+Catatan:
+
+- Workflow deployment staging dan production sudah mulai disiapkan di `.github/workflows/`, tetapi backend belum dihubungkan ke target hosting final.
+- Untuk saat ini fokus backend masih di API, validasi, dan fondasi deploy, bukan eksekusi deployment production penuh.
 
 ## Setup
 

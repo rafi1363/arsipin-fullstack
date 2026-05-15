@@ -64,3 +64,17 @@ export function isValidDateInput(value: unknown) {
 export function toDate(value: string) {
   return new Date(value.trim());
 }
+
+export type DocumentStatus = "active" | "expiring_soon" | "expired";
+
+export function isValidDocumentStatus(value: unknown): value is DocumentStatus {
+  return value === "active" || value === "expiring_soon" || value === "expired";
+}
+
+export function isValidDocumentSortBy(value: unknown) {
+  return value === "createdAt" || value === "expiredDate" || value === "title";
+}
+
+export function isValidSortOrder(value: unknown) {
+  return value === "asc" || value === "desc";
+}

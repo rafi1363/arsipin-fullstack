@@ -675,6 +675,28 @@ Istilah penting:
 - `rate limiting`
 - `static analysis`
 
+### 25. Deployment scaffold sebaiknya dipisahkan dari target hosting final
+
+Pendekatan yang dipilih untuk Arsipin:
+
+- siapkan workflow `staging` dan `production` lebih dulu
+- gunakan satu repo utama sebagai sumber kebenaran kode
+- simpan perbedaan environment di GitHub Environments
+- tunda wiring deploy sampai target hosting final sudah dipilih
+
+Kenapa ini sehat:
+
+- struktur pipeline sudah siap tanpa memaksa keputusan hosting terlalu cepat
+- kita bisa belajar CI/CD bertahap tanpa meniru kompleksitas sistem enterprise
+- deployment workflow yang masih scaffold tidak mengganggu development backend harian
+
+Istilah penting:
+
+- `environment`
+- `deployment scaffold`
+- `single repo`
+- `provider final`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
@@ -691,5 +713,6 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 - Menambahkan status `expiring_soon` dan `expired`
 - Menambahkan automated tests
 - Menambahkan deployment workflow
+- Menentukan target host final untuk staging dan production
 - Belajar Docker untuk packaging aplikasi
 - Belajar monitoring, logging, health check, dan backup

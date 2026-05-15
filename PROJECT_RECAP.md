@@ -8,7 +8,7 @@ Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan doku
 
 Kondisi repo saat ini:
 
-- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, dan endpoint document create/list.
+- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, dan endpoint document create/list/detail.
 - Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
 - Pipeline GitHub untuk CI, security baseline, dan branch workflow dasar sudah ada dan validasi utama sudah bisa dijalankan.
 - Proteksi branch `main` sudah terverifikasi menolak direct push dan memaksa alur branch plus pull request.
@@ -65,6 +65,9 @@ arsipin-fullstack/
 
 Catatan:
 
+- Workflow deploy staging dan production sudah disiapkan sebagai scaffold di `.github/workflows/`, tetapi target deployment final masih belum dihubungkan.
+- Untuk tahap sekarang, repository sudah punya fondasi CI/CD yang siap dipakai, sementara deployment production masih menunggu pilihan host yang final.
+
 - Build frontend lulus saat dijalankan normal.
 - Saat diuji di sandbox lokal, `next build` sempat gagal karena batasan proses Turbopack, bukan karena source code.
 
@@ -88,8 +91,8 @@ Catatan:
 - [x] Document create endpoint
 - [x] Document list endpoint
 - [x] Document detail endpoint
-- [ ] Document update endpoint
-- [ ] Document delete endpoint
+- [x] Document update endpoint
+- [x] Document delete endpoint
 - [ ] Search dan filter dokumen
 - [ ] Expiry tracking
 - [ ] Dashboard summary endpoint
@@ -182,7 +185,7 @@ Catatan:
 - endpoint `POST /documents` sudah aktif untuk membuat dokumen milik user yang login
 - endpoint `GET /documents` sudah aktif untuk mengambil daftar dokumen milik user yang login
 - endpoint detail sudah aktif dan membatasi akses berdasarkan `id` + `userId`
-- update dan delete masih belum dibuat
+- endpoint update dan delete sudah aktif dengan pola ownership check yang sama
 
 ### Code Quality Dan Security Feedback
 
@@ -204,6 +207,8 @@ Makna praktis:
 - `.github/workflows/ci.yml`
 - `.github/workflows/codeql.yml`
 - `.github/workflows/security.yml`
+- `.github/workflows/deploy-staging.yml`
+- `.github/workflows/deploy-production.yml`
 - `.github/dependabot.yml`
 
 Job/check penting yang dipakai saat ini:
@@ -219,6 +224,7 @@ Catatan:
 - workflow tidak lagi terbatas ke `main`
 - branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**` sekarang juga memicu pipeline saat `push`
 - ini membantu melihat status branch sebelum membuat pull request
+- workflow deploy staging dan production sudah ada, tetapi masih bersifat scaffold dan belum terhubung ke provider deployment
 
 ### Status Proteksi Branch `main`
 

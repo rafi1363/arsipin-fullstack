@@ -103,7 +103,7 @@ Deploy workflow:
 Pipeline notes:
 
 - `CI`, `CodeQL`, dan `Security` memakai concurrency agar run lama pada branch/PR yang sama dibatalkan saat ada push baru
-- required checks utama saat ini adalah `Backend`, `Frontend`, `Analyze`, `Secret Scan`, dan `Dependency Scan`
+- required checks utama saat ini adalah `Backend`, `Frontend`, `CodeQL Analyze`, `Secret Scan`, dan `Dependency Scan`
 
 ## Security Notes
 

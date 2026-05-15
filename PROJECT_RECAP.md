@@ -227,7 +227,7 @@ Job/check penting yang dipakai saat ini:
 
 - `Backend`
 - `Frontend`
-- `Analyze`
+- `CodeQL Analyze`
 - `Secret Scan`
 - `Dependency Scan`
 

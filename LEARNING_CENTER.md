@@ -744,19 +744,19 @@ Keputusan:
 
 - workflow `CI`, `CodeQL`, dan `Security` diberi `concurrency`
 - job `Backend` menambahkan `bun run format:check`
-- job CodeQL tetap memakai nama check `Analyze` agar cocok dengan ruleset `main`
+- job CodeQL diberi nama check yang lebih spesifik: `CodeQL Analyze`
 - workflow deploy ikut memverifikasi nama check CodeQL yang sama dengan ruleset
 
 Kenapa ini sehat:
 
 - push baru ke branch yang sama otomatis membatalkan run lama yang sudah tidak relevan
 - format check menangkap perubahan style sebelum masuk review
-- nama check yang stabil menghindari required status check tertahan di status `Expected`
+- nama check yang spesifik lebih mudah dipahami saat membaca PR checks
 - enhancement tetap ringan dan tidak menambah scanner yang noisy
 
 Catatan operasional:
 
-- jika nama job/check di workflow diubah, required status checks di GitHub harus ikut disesuaikan
+- ruleset `main` perlu mewajibkan `CodeQL Analyze`, bukan nama lama `Analyze`
 - branch protection dan deploy verification harus memakai nama check yang sama
 
 Istilah penting:
@@ -772,7 +772,7 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
-- Required status checks harus cocok dengan nama job/check di workflow
+- Required status check `CodeQL Analyze` harus disetel di ruleset `main`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya

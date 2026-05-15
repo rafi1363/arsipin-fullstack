@@ -24,10 +24,10 @@ Yang sudah tersedia:
 - search dokumen via query `search`
 - filter status dokumen via query `status`
 - sorting dokumen via query `sortBy` dan `sortOrder`
+- dashboard summary endpoint `GET /documents/summary`
 
 Yang belum tersedia:
 
-- dashboard summary endpoint
 - reminder expiry
 - upload file arsip asli
 
@@ -39,6 +39,7 @@ Catatan:
 - route documents sekarang memvalidasi title dan format `expiredDate` sebelum write ke database
 - route `GET /documents` sekarang mendukung search, status filter, dan sorting
 - status `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` pada response list dokumen
+- route `GET /documents/summary` sekarang menyediakan total dokumen, breakdown status expiry, dan nearest expiry
 - error response backend mulai dirapikan lewat helper `backend/lib/http.ts`
 
 ## Setup

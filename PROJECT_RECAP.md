@@ -8,7 +8,7 @@ Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan doku
 
 Kondisi repo saat ini:
 
-- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, endpoint document CRUD metadata, serta list endpoint dengan search, status filter, dan sorting.
+- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, endpoint document CRUD metadata, list endpoint dengan search, status filter, dan sorting, serta dashboard summary endpoint untuk kebutuhan demo.
 - Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
 - Pipeline GitHub untuk CI, security baseline, dan branch workflow dasar sudah ada dan validasi utama sudah bisa dijalankan.
 - Proteksi branch `main` sudah terverifikasi menolak direct push dan memaksa alur branch plus pull request.
@@ -101,8 +101,8 @@ Catatan:
 - [x] Document delete endpoint
 - [x] Search dan filter dokumen dasar
 - [x] Expiry tracking dasar berbasis status response
+- [x] Dashboard summary endpoint
 - [ ] Validasi input document yang lebih kuat
-- [ ] Dashboard summary endpoint
 
 ### Frontend
 
@@ -196,6 +196,7 @@ Catatan:
 - endpoint `GET /documents` sudah aktif untuk mengambil daftar dokumen milik user yang login
 - endpoint `GET /documents` sekarang juga mendukung query `search`, `status`, `sortBy`, dan `sortOrder`
 - status dokumen `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` di list response tanpa menambah kolom database baru
+- endpoint `GET /documents/summary` sekarang menyediakan total dokumen, breakdown status expiry, dan nearest expiry untuk dashboard
 - endpoint detail sudah aktif dan membatasi akses berdasarkan `id` + `userId`
 - endpoint update dan delete sudah aktif dengan pola ownership check yang sama
 - create dan update document sekarang sudah memvalidasi title serta format `expiredDate` sebelum write ke database
@@ -310,8 +311,7 @@ Hasil:
 
 Urutan yang paling masuk akal dari kondisi sekarang:
 
-1. Tambahkan dashboard summary endpoint.
-2. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
-3. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
-4. Tambahkan automated tests.
-5. Hubungkan workflow deploy ke provider hosting final.
+1. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
+2. Tambahkan automated tests.
+3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
+4. Hubungkan workflow deploy ke provider hosting final.

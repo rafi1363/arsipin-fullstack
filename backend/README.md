@@ -13,13 +13,13 @@ Yang sudah tersedia:
 - `GET /auth/me`
 - `POST /documents`
 - `GET /documents`
+- `GET /documents/:id`
 - JWT helper reusable
 - auth middleware
 - rate limiting dasar untuk route auth dan route protected
 
 Yang belum tersedia:
 
-- `GET /documents/:id`
 - `PUT /documents/:id`
 - `DELETE /documents/:id`
 - search/filter document

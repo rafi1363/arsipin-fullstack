@@ -756,7 +756,7 @@ Kenapa ini sehat:
 
 Catatan operasional:
 
-- ruleset `main` perlu mewajibkan `CodeQL Analyze`, bukan nama lama `Analyze`
+- ruleset `main` sekarang mewajibkan `CodeQL Analyze`, bukan nama lama `Analyze`
 - branch protection dan deploy verification harus memakai nama check yang sama
 
 Istilah penting:
@@ -772,7 +772,6 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
-- Required status check `CodeQL Analyze` harus disetel di ruleset `main`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya

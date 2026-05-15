@@ -54,6 +54,7 @@ bun run dev
 
 ```bash
 bun run prisma:generate
+bun run format:check
 bun run typecheck
 ```
 

@@ -56,6 +56,7 @@ cd backend
 bun install
 cp .env.example .env
 bun run prisma:generate
+bun run format:check
 bun run typecheck
 bun run dev
 ```
@@ -76,6 +77,7 @@ Backend:
 ```bash
 cd backend
 bun run prisma:generate
+bun run format:check
 bun run typecheck
 ```
 

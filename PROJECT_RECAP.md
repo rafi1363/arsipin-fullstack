@@ -277,6 +277,7 @@ Backend:
 cd backend
 bun install
 bun run prisma:generate
+bun run format:check
 bun run typecheck
 ```
 

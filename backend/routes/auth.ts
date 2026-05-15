@@ -5,39 +5,54 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 
 import { generateToken } from "../lib/jwt";
-import { authRateLimiter, protectedRouteLimiter } from "../middlewares/rate-limit";
+import {
+  authRateLimiter,
+  protectedRouteLimiter,
+} from "../middlewares/rate-limit";
 
 import { authMiddleware } from "../middlewares/auth";
+
+import { isValidEmail, normalizeString } from "../lib/validation";
+
+import { sendError } from "../lib/http";
 
 const authRouter = Router();
 
 authRouter.post("/register", authRateLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body ?? {};
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "Name, email and password are required",
-      });
+    const normalizedName = normalizeString(name);
+    const normalizedEmail = normalizeString(email);
+    const normalizedPassword = normalizeString(password);
+
+    if (!normalizedName || !normalizedEmail || !normalizedPassword) {
+      return sendError(res, 400, "Name, email, and password are required");
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      return sendError(res, 400, "Email format is invalid");
+    }
+
+    if (normalizedPassword.length < 8) {
+      return sendError(res, 400, "Password must be at least 8 characters long");
     }
 
     const existingUser = await prisma.user.findUnique({
       where: {
-        email,
+        email: normalizedEmail,
       },
     });
 
     if (existingUser) {
-      return res.status(409).json({
-        message: "Email is already registered",
-      });
+      return sendError(res, 409, "Email is already registered");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(normalizedPassword, 10);
 
     const newUser = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: normalizedName,
+        email: normalizedEmail,
         password: hashedPassword,
       },
       select: {
@@ -55,9 +70,7 @@ authRouter.post("/register", authRateLimiter, async (req, res) => {
   } catch (error) {
     console.error("Register error: ", error);
 
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    return sendError(res, 500, "Internal server error");
   }
 });
 
@@ -65,30 +78,34 @@ authRouter.post("/login", authRateLimiter, async (req, res) => {
   try {
     const { email, password } = req.body ?? {};
 
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and Password are required",
-      });
+    const normalizedEmail = normalizeString(email);
+    const normalizedPassword = normalizeString(password);
+
+    if (!normalizedEmail || !normalizedPassword) {
+      return sendError(res, 400, "Email and Password are required");
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      return sendError(res, 400, "Email format is invalid");
     }
 
     const user = await prisma.user.findUnique({
       where: {
-        email,
+        email: normalizedEmail,
       },
     });
 
     if (!user) {
-      return res.status(401).json({
-        message: "Invalid Email or Password",
-      });
+      return sendError(res, 401, "Invalid Email or Password");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      normalizedPassword,
+      user.password,
+    );
 
     if (!isPasswordValid) {
-      return res.status(401).json({
-        message: "Invalid Email or Password",
-      });
+      return sendError(res, 401, "Invalid Email or Password");
     }
 
     const token = generateToken({
@@ -108,17 +125,20 @@ authRouter.post("/login", authRateLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error("Login error: ", error);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    return sendError(res, 500, "Internal server error");
   }
 });
 
-authRouter.get("/me", protectedRouteLimiter, authMiddleware, async (req, res) => {
-  return res.status(200).json({
-    message: "Authenticated user",
-    user: req.user,
-  });
-});
+authRouter.get(
+  "/me",
+  protectedRouteLimiter,
+  authMiddleware,
+  async (req, res) => {
+    return res.status(200).json({
+      message: "Authenticated user",
+      user: req.user,
+    });
+  },
+);
 
 export default authRouter;

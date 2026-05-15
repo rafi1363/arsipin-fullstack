@@ -8,7 +8,7 @@ Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan doku
 
 Kondisi repo saat ini:
 
-- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, dan endpoint document create/list/detail.
+- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, dan endpoint document CRUD metadata.
 - Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
 - Pipeline GitHub untuk CI, security baseline, dan branch workflow dasar sudah ada dan validasi utama sudah bisa dijalankan.
 - Proteksi branch `main` sudah terverifikasi menolak direct push dan memaksa alur branch plus pull request.
@@ -61,7 +61,7 @@ arsipin-fullstack/
 - [x] Frontend `lint` lulus
 - [x] Frontend `build` lulus
 - [ ] Automated tests backend/frontend
-- [ ] Deployment workflow
+- [ ] Final deployment integration
 
 Catatan:
 
@@ -93,6 +93,7 @@ Catatan:
 - [x] Document detail endpoint
 - [x] Document update endpoint
 - [x] Document delete endpoint
+- [ ] Validasi input document yang lebih kuat
 - [ ] Search dan filter dokumen
 - [ ] Expiry tracking
 - [ ] Dashboard summary endpoint
@@ -292,10 +293,10 @@ Hasil:
 
 Urutan yang paling masuk akal dari kondisi sekarang:
 
-1. Lengkapi document CRUD dengan endpoint detail, update, dan delete.
-2. Tambahkan validasi input yang lebih rapi, terutama untuk tanggal dan field document.
-3. Tambahkan search, filter, dan expiry tracking berbasis status.
+1. Tambahkan validasi input yang lebih rapi, terutama untuk tanggal dan field document.
+2. Tambahkan search, filter, dan expiry tracking berbasis status.
+3. Tambahkan dashboard summary endpoint.
 4. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
 5. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
 6. Tambahkan automated tests.
-7. Siapkan deployment workflow.
+7. Hubungkan workflow deploy ke provider hosting final.

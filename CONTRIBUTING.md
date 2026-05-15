@@ -40,6 +40,7 @@ Backend:
 ```bash
 cd backend
 bun run prisma:generate
+bun run format:check
 bun run typecheck
 ```
 

@@ -154,7 +154,11 @@ documentsRouter.put(
         return sendError(res, 400, "Document id is required");
       }
 
-      if (!title === undefined && description === undefined) {
+      if (
+        title === undefined &&
+        description === undefined &&
+        expiredDate === undefined
+      ) {
         return sendError(res, 400, "At least one field is required to update");
       }
 
@@ -187,7 +191,7 @@ documentsRouter.put(
             ? { description: normalizedDescription }
             : {}),
           ...(expiredDate !== undefined
-            ? { expiredDate: new Date(expiredDate) }
+            ? { expiredDate: toDate(expiredDate) }
             : {}),
         },
       });

@@ -21,11 +21,14 @@ Yang sudah tersedia:
 - shared HTTP error response helper
 - auth middleware
 - rate limiting dasar untuk route auth dan route protected
+- search dokumen via query `search`
+- filter status dokumen via query `status`
+- sorting dokumen via query `sortBy` dan `sortOrder`
 
 Yang belum tersedia:
 
-- search/filter document
-- expiry tracking berbasis status
+- dashboard summary endpoint
+- reminder expiry
 - upload file arsip asli
 
 Catatan:
@@ -34,6 +37,8 @@ Catatan:
 - Untuk saat ini fokus backend masih di API, validasi, dan fondasi deploy, bukan eksekusi deployment production penuh.
 - route auth sekarang memvalidasi required fields, format email, dan minimum password length
 - route documents sekarang memvalidasi title dan format `expiredDate` sebelum write ke database
+- route `GET /documents` sekarang mendukung search, status filter, dan sorting
+- status `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` pada response list dokumen
 - error response backend mulai dirapikan lewat helper `backend/lib/http.ts`
 
 ## Setup

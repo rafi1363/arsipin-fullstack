@@ -278,6 +278,37 @@ Solusi yang dipakai:
 Pelajaran:
 
 - konfigurasi CLI dan konfigurasi runtime tidak selalu sama
+
+### 12. Expiry status tidak selalu butuh perubahan schema
+
+Kasus yang terjadi:
+
+- kebutuhan milestone berikutnya adalah membuat list dokumen terasa lebih seperti produk nyata
+- yang dibutuhkan bukan sekadar daftar semua dokumen, tetapi kemampuan search, filter status, dan sorting
+
+Keputusan:
+
+- query `search` dijalankan di database lewat Prisma
+- status `active`, `expiring_soon`, dan `expired` dihitung dari `expiredDate` saat response dibentuk
+- filter status dilakukan setelah dokumen diberi computed status
+
+Kenapa pendekatan ini dipilih:
+
+- untuk MVP, perubahan ini memberi dampak demo yang besar tanpa migration baru
+- status expiry adalah hasil turunan dari data yang sudah ada, jadi belum wajib disimpan sebagai kolom terpisah
+- pendekatan ini menjaga langkah pengembangan tetap ringan sambil tetap membuka jalan ke optimasi query database nanti
+
+Pelajaran:
+
+- tidak semua kebutuhan produk harus langsung diselesaikan dengan menambah field database
+- kadang computed field di response sudah cukup untuk membuktikan arah fitur
+- validasi query parameter tetap penting walau inputnya terlihat sederhana
+
+Istilah penting:
+
+- `derived state`
+- `query parameter validation`
+- `computed field`
 - membaca error runtime dengan tenang sering kali menunjukkan perubahan konsep library, bukan sekadar typo
 
 Istilah penting:

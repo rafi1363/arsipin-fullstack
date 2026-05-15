@@ -3,7 +3,15 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { authMiddleware } from "../middlewares/auth";
 import { protectedRouteLimiter } from "../middlewares/rate-limit";
-import { isValidDateInput, normalizeString, toDate } from "../lib/validation";
+import {
+  isValidDateInput,
+  normalizeString,
+  isValidDocumentSortBy,
+  isValidDocumentStatus,
+  isValidSortOrder,
+  toDate,
+  type DocumentStatus,
+} from "../lib/validation";
 import { sendError } from "../lib/http";
 
 const documentsRouter = Router();
@@ -13,6 +21,23 @@ function getDocumentId(param: string | string[] | undefined) {
     return param[0];
   }
   return param;
+}
+
+function getDocumentStatus(expiredDate: Date): DocumentStatus {
+  const now = new Date();
+
+  if (expiredDate.getTime() < now.getTime()) {
+    return "expired";
+  }
+
+  const diffInMs = expiredDate.getTime() - now.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  if (diffInDays <= 30) {
+    return "expiring_soon";
+  }
+
+  return "active";
 }
 
 documentsRouter.post(
@@ -67,23 +92,76 @@ documentsRouter.get(
   async (req, res) => {
     try {
       const userId = req.user?.userId;
+      const search = normalizeString(req.query.search);
+      const status = req.query.status;
+      const sortBy = req.query.sortBy ?? "createdAt";
+      const sortOrder = req.query.sortOrder ?? "desc";
 
       if (!userId) {
         return sendError(res, 401, "Unauthorized");
       }
 
+      if (status !== undefined && !isValidDocumentStatus(status)) {
+        return sendError(
+          res,
+          400,
+          "Status must be one of: active, expiring_soon, expired",
+        );
+      }
+
+      if (!isValidDocumentSortBy(sortBy)) {
+        return sendError(
+          res,
+          400,
+          "Sort by must be one of: createdAt, expiredDate, title",
+        );
+      }
+
+      if (!isValidSortOrder(sortOrder)) {
+        return sendError(res, 400, "Sort order must be one of: asc, desc");
+      }
+
       const documents = await prisma.document.findMany({
         where: {
           userId,
+          ...(search
+            ? {
+                OR: [
+                  {
+                    title: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    description: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              }
+            : {}),
         },
         orderBy: {
-          createdAt: "desc",
+          [sortBy]: sortOrder,
         },
       });
 
+      const documentWithStatus = documents.map((document) => ({
+        ...document,
+        status: getDocumentStatus(document.expiredDate),
+      }));
+
+      const filteredDocuments =
+        status === undefined
+          ? documentWithStatus
+          : documentWithStatus.filter((document) => document.status === status);
+
       return res.status(200).json({
-        message: "Documents fetched Successfully",
-        documents,
+        message: "Documents fetched successfully",
+        total: filteredDocuments.length,
+        documents: filteredDocuments,
       });
     } catch (error) {
       console.error("Fetch documents error: ", error);

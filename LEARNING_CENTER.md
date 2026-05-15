@@ -309,6 +309,35 @@ Istilah penting:
 - `derived state`
 - `query parameter validation`
 - `computed field`
+
+### 13. Summary endpoint kecil bisa membuka jalan ke UI yang lebih hidup
+
+Kasus yang terjadi:
+
+- setelah list dokumen punya search, filter, dan sorting, frontend masih belum punya data ringkas untuk tampilan dashboard
+- kebutuhan demo publik bukan hanya tabel, tetapi juga angka ringkasan yang cepat dibaca
+
+Keputusan:
+
+- tambahkan endpoint `GET /documents/summary` di route documents yang sudah ada
+- summary cukup mengambil field minimum yang dibutuhkan, lalu menghitung total, breakdown status expiry, dan nearest expiry di server
+
+Kenapa pendekatan ini dipilih:
+
+- dashboard frontend jadi bisa mulai dibangun tanpa memaksa frontend menghitung summary sendiri
+- query tetap ringan karena tidak mengambil seluruh kolom dokumen
+- perubahan ini menjaga kontrak API tetap sederhana tetapi lebih siap untuk demo
+
+Pelajaran:
+
+- endpoint kecil yang spesifik untuk dashboard sering memberi dampak produk lebih besar daripada menambah banyak fitur teknis sekaligus
+- struktur route juga penting: endpoint statis seperti `/summary` harus diletakkan sebelum route dinamis seperti `/:id`
+
+Istilah penting:
+
+- `summary endpoint`
+- `route order`
+- `dashboard contract`
 - membaca error runtime dengan tenang sering kali menunjukkan perubahan konsep library, bukan sekadar typo
 
 Istilah penting:

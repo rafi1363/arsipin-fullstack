@@ -4,7 +4,7 @@ Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen.
 
 ## Current State
 
-- Backend sudah memiliki fondasi API yang nyata dengan auth JWT, protected routes, rate limiting, document metadata CRUD, serta list endpoint dengan search, status filter, dan sorting.
+- Backend sudah memiliki fondasi API yang nyata dengan auth JWT, protected routes, rate limiting, document metadata CRUD, list endpoint dengan search, status filter, dan sorting, serta dashboard summary endpoint untuk kebutuhan demo.
 - Frontend masih berada di tahap starter `Next.js` dan belum merepresentasikan UI produk Arsipin.
 - Pipeline engineering baseline sudah aktif: CI, backend format check, CodeQL, Gitleaks, Trivy, Dependabot, dan workflow deploy manual untuk `staging` serta `production`.
 - Deploy nyata ke provider hosting belum dihubungkan; workflow deploy saat ini masih berupa scaffold dengan guardrail yang sudah disiapkan.
@@ -35,6 +35,7 @@ Catatan implementasi:
 - document create dan update memvalidasi title serta format `expiredDate`
 - `GET /documents` mendukung `search`, `status`, `sortBy`, dan `sortOrder`
 - status dokumen `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` di response list endpoint
+- `GET /documents/summary` menyediakan ringkasan total dokumen, status expiry, dan nearest expiry
 - akses dokumen tunggal dibatasi dengan ownership check `id + userId`
 - sistem dokumen saat ini masih menyimpan metadata, belum file upload/storage
 
@@ -118,8 +119,7 @@ Pipeline notes:
 
 ## Recommended Next Steps
 
-1. Tambahkan dashboard summary endpoint untuk kebutuhan demo dan frontend.
-2. Setelah kontrak API lebih stabil, mulai bangun UI frontend Arsipin.
-3. Tambahkan automated tests sebelum menghubungkan deploy ke host final.
-4. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
-5. Hubungkan workflow deploy ke provider hosting final.
+1. Mulai bangun UI frontend Arsipin dengan login, dashboard summary, dan list dokumen.
+2. Tambahkan automated tests sebelum menghubungkan deploy ke host final.
+3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
+4. Hubungkan workflow deploy ke provider hosting final.

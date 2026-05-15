@@ -171,6 +171,75 @@ documentsRouter.get(
 );
 
 documentsRouter.get(
+  "/summary",
+  protectedRouteLimiter,
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return sendError(res, 401, "Unauthorized");
+      }
+
+      const documents = await prisma.document.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          id: true,
+          title: true,
+          expiredDate: true,
+        },
+        orderBy: {
+          expiredDate: "asc",
+        },
+      });
+
+      const documentWithStatus = documents.map((document) => ({
+        ...document,
+        status: getDocumentStatus(document.expiredDate),
+      }));
+
+      const activeDocuments = documentWithStatus.filter(
+        (document) => document.status === "active",
+      );
+      const expiringSoonDocuments = documentWithStatus.filter(
+        (document) => document.status === "expiring_soon",
+      );
+      const expiredDocuments = documentWithStatus.filter(
+        (document) => document.status === "expired",
+      );
+
+      const nearestExpiry =
+        documentWithStatus.find((document) => document.status !== "expired") ??
+        null;
+
+      return res.status(200).json({
+        message: "Dashboard summary fetched successfully",
+        summary: {
+          totalDocuments: documentWithStatus.length,
+          activeDocuments: activeDocuments.length,
+          expiringSoonDocuments: expiringSoonDocuments.length,
+          expiredDocuments: expiredDocuments.length,
+          nearestExpiry: nearestExpiry
+            ? {
+                id: nearestExpiry.id,
+                title: nearestExpiry.title,
+                expiredDate: nearestExpiry.expiredDate,
+                status: nearestExpiry.status,
+              }
+            : null,
+        },
+      });
+    } catch (error) {
+      console.error("Fetch documents summary error: ", error);
+      return sendError(res, 500, "Internal Server Error");
+    }
+  },
+);
+
+documentsRouter.get(
   "/:id",
   protectedRouteLimiter,
   authMiddleware,

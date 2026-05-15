@@ -9,6 +9,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "prettier": "^3.8.3",
     "prisma": "^7.8.0",
     "tsx": "^4.22.0"
   },
@@ -29,6 +30,8 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "bunx prisma generate",
     "prisma:migrate": "bunx prisma migrate dev",
-    "prisma:studio": "bunx prisma studio"
+    "prisma:studio": "bunx prisma studio",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   }
 }

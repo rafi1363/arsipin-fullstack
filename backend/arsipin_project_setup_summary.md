@@ -1,9 +1,11 @@
 # Arsipin Fullstack Project Setup Summary
 
 ## Project Overview
+
 Project name: **Arsipin**
 
 Tech stack:
+
 - Frontend: Next.js + Tailwind CSS + TypeScript
 - Backend: Express.js + TypeScript
 - Database: Neon PostgreSQL
@@ -31,12 +33,14 @@ bun init -y
 ```
 
 Generated files:
+
 - `.gitignore`
 - `index.ts`
 - `tsconfig.json`
 - `README.md`
 
 Notes:
+
 - `tsconfig.json` already exists automatically from Bun.
 - No need to run `bunx tsc --init` again.
 
@@ -82,6 +86,7 @@ prisma.config.ts
 ## Create Neon Project
 
 Platform:
+
 - Neon PostgreSQL
 
 Recommended project name:
@@ -91,6 +96,7 @@ arsipin-db
 ```
 
 After project creation, Neon provides:
+
 - Database URL
 - Username
 - Password
@@ -189,6 +195,7 @@ bunx prisma migrate dev --name init
 ```
 
 Result:
+
 - Tables created successfully in Neon PostgreSQL.
 - Prisma Client generated.
 
@@ -265,6 +272,7 @@ Import alias: @/*
 ```
 
 Installed:
+
 - Next.js 16
 - React 19
 - Tailwind CSS 4
@@ -276,12 +284,14 @@ Installed:
 # Project MVP Features
 
 ## Authentication
+
 - Register
 - Login
 - JWT Authentication
 - Protected Routes
 
 ## Document Management
+
 - Create document
 - Read document
 - Update document
@@ -290,11 +300,13 @@ Installed:
 - Filter documents
 
 ## Expiry Tracking
+
 - Active
 - Expiring Soon
 - Expired
 
 ## Dashboard
+
 - Total documents
 - Active documents
 - Expiring soon
@@ -305,6 +317,7 @@ Installed:
 # Recommended Next Steps
 
 ## Backend
+
 1. Setup Prisma Client singleton
 2. Create auth routes
 3. Implement register/login
@@ -313,6 +326,7 @@ Installed:
 6. Expiry status calculation
 
 ## Frontend
+
 1. Setup Tailwind layout
 2. Login/Register pages
 3. Dashboard UI
@@ -327,6 +341,7 @@ Installed:
 ## Common Mistakes Encountered
 
 ### Typo Package Names
+
 Wrong:
 
 ```bash
@@ -362,6 +377,7 @@ url = env("DATABASE_URL")
 ```
 
 Prisma v7:
+
 - Connection URL moved into `prisma.config.ts`
 - `schema.prisma` only contains provider
 
@@ -370,6 +386,7 @@ Prisma v7:
 # Current Progress Status
 
 Completed:
+
 - Backend initialized
 - Frontend initialized
 - Bun configured
@@ -379,7 +396,7 @@ Completed:
 - Initial API setup completed
 
 Next milestone:
+
 - Authentication system implementation
 - Full CRUD document system
 - Frontend dashboard integration
-

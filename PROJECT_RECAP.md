@@ -358,6 +358,88 @@ Project sudah memiliki fondasi:
 - Git lokal rapi.
 - Repo GitHub aktif.
 - CI GitHub Actions aktif.
+
+## Branch Protection Dan Workflow Git
+
+`main` sekarang sudah diproteksi di GitHub dengan model classic branch protection.
+
+Rule penting yang aktif:
+
+- Pull request wajib sebelum merge
+- Status checks wajib lulus sebelum merge
+- Branch harus up to date sebelum merge
+- Force push tidak diizinkan
+- Delete branch `main` tidak diizinkan
+
+Status checks yang dipakai diarahkan agar lebih lengkap, tidak hanya scan security:
+
+- `Backend`
+- `Frontend`
+- `CodeQL`
+- `Dependency Scan`
+- `Secret Scan`
+
+Catatan evaluasi:
+
+- Branch protection untuk solo developer tetap berguna karena memaksa disiplin PR dan validasi.
+- Approval review tidak harus dijadikan kewajiban di fase awal jika justru menghambat alur kerja solo.
+
+## Pembersihan Branch Remote
+
+Ada branch lama `feature/backend-express/api` yang sudah dihapus lokal, tetapi masih ada di GitHub.
+
+Perintah yang dipakai:
+
+```bash
+git push origin --delete feature/backend-express/api
+git fetch --prune
+```
+
+Pelajaran:
+
+- `git branch -d` hanya menghapus branch lokal
+- `git push origin --delete ...` menghapus branch di remote GitHub
+- `git fetch --prune` membersihkan referensi remote yang basi di lokal
+
+## Setup Prettier Untuk Backend
+
+Karena format on save belum berjalan, dilakukan setup formatter minimum untuk backend.
+
+Yang sudah ditambahkan:
+
+- `prettier` di `backend/devDependencies`
+- script `format`
+- script `format:check`
+- file workspace `.vscode/settings.json`
+- konfigurasi `backend/.prettierrc` tetap dipakai
+
+Isi penting workspace settings:
+
+- `editor.formatOnSave: true`
+- `editor.defaultFormatter: esbenp.prettier-vscode`
+- formatter default diarahkan untuk TypeScript, JavaScript, dan JSON
+
+Keputusan implementasi:
+
+- Untuk sekarang cukup fokus ke backend dan workspace setting
+- Tidak perlu menambahkan semua tooling formatter sekaligus ke seluruh repo jika belum dibutuhkan
+
+## Langkah Berikutnya Yang Sudah Disepakati
+
+Setelah fondasi GitHub dan tooling dasar cukup rapi, langkah belajar berikutnya adalah:
+
+- lanjut di branch `feature/auth-backend`
+- ubah `backend/index.ts` dari placeholder menjadi Express server minimal
+- buat route `GET /`
+- buat route `GET /health`
+- jalankan `bun run dev`, `bun run prisma:generate`, dan `bun run typecheck`
+
+Pendekatan kerja yang dipilih:
+
+- user mengetik kode sendiri
+- assistant memberi instruksi, penjelasan struktur, dan review
+- setiap pembelajaran baru dicatat di `LEARNING_CENTER.md`
+- setiap perubahan penting diringkas di `PROJECT_RECAP.md`
 - CodeQL aktif.
 - Dependabot aktif.
 - Secret tidak masuk Git.

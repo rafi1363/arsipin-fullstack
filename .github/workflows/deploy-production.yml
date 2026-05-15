@@ -40,7 +40,7 @@ jobs:
           REPO: ${{ github.repository }}
           TARGET_SHA: ${{ steps.resolve.outputs.target_sha }}
         run: |
-          REQUIRED_CHECKS=("Backend" "Frontend" "Analyze" "Secret Scan" "Dependency Scan")
+          REQUIRED_CHECKS=("Backend" "Frontend" "CodeQL Analyze" "Secret Scan" "Dependency Scan")
 
           response=$(gh api \
             -H "Accept: application/vnd.github+json" \

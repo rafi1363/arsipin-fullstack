@@ -738,12 +738,41 @@ Istilah penting:
 - `consistent error response`
 - `regex performance risk`
 
+### 27. CI/CD enhancement sebaiknya mengurangi noise, bukan menambah beban
+
+Keputusan:
+
+- workflow `CI`, `CodeQL`, dan `Security` diberi `concurrency`
+- job `Backend` menambahkan `bun run format:check`
+- job CodeQL diberi nama check yang lebih spesifik: `CodeQL Analyze`
+- workflow deploy ikut memverifikasi nama check CodeQL yang baru
+
+Kenapa ini sehat:
+
+- push baru ke branch yang sama otomatis membatalkan run lama yang sudah tidak relevan
+- format check menangkap perubahan style sebelum masuk review
+- nama check yang spesifik lebih mudah dipahami saat membaca PR checks
+- enhancement tetap ringan dan tidak menambah scanner yang noisy
+
+Catatan operasional:
+
+- jika required status checks di GitHub masih memakai nama lama `Analyze`, ubah menjadi `CodeQL Analyze`
+- branch protection dan deploy verification harus memakai nama check yang sama
+
+Istilah penting:
+
+- `concurrency`
+- `cancel-in-progress`
+- `format check`
+- `required status check`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
+- Required status check `CodeQL Analyze` jika sebelumnya masih memakai `Analyze`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya

@@ -497,21 +497,178 @@ Istilah penting:
 - `protected branch`
 - `operational control`
 
+### 18. Verifikasi branch protection harus dibuktikan dengan perilaku nyata
+
+Hasil uji yang terjadi:
+
+- direct push ke `main` memang tertolak
+- alur perubahan normal sekarang harus lewat branch baru dan pull request
+
+Pelajaran:
+
+- branch protection tidak cukup dinilai dari tampilan settings saja
+- validasi terbaik adalah mencoba alur kerja nyatanya
+- setelah perilaku direct push benar-benar tertolak, proteksi `main` baru bisa dianggap selesai secara operasional
+
+Istilah penting:
+
+- `direct push`
+- `protected workflow`
+- `behavior verification`
+
+### 19. `req.body` tidak selalu aman untuk langsung di-destructure
+
+Kasus yang terjadi:
+
+- request `curl` yang salah format membuat body request tidak terbaca seperti yang diharapkan
+- destructuring langsung seperti `const { email, password } = req.body` memicu runtime error
+
+Solusi yang dipakai:
+
+- gunakan fallback object kosong, misalnya `req.body ?? {}`
+
+Pelajaran:
+
+- validasi request tidak hanya soal isi field, tetapi juga soal bentuk data yang benar-benar masuk ke handler
+- fallback sederhana bisa mengubah `500` yang membingungkan menjadi `400` yang lebih masuk akal
+
+Istilah penting:
+
+- `destructuring`
+- `request body`
+- `defensive coding`
+
+### 20. JWT helper sebaiknya dipusatkan agar reusable
+
+Struktur yang dipakai:
+
+- `backend/lib/jwt.ts` memegang helper JWT utama
+- helper tersebut menangani pengambilan secret, pembuatan token, dan verifikasi token
+
+Kenapa penting:
+
+- route login tidak perlu tahu detail implementasi `jsonwebtoken`
+- middleware auth bisa memakai helper verifikasi yang sama
+- perubahan seperti expiry token atau payload format cukup dilakukan di satu tempat
+
+Pelajaran:
+
+- helper reusable mengurangi duplikasi
+- logika security yang tersebar di banyak file lebih sulit dirawat
+
+Istilah penting:
+
+- `token payload`
+- `verify token`
+- `single source of truth`
+
+### 21. Protected route pertama membuktikan auth flow benar-benar selesai
+
+Milestone yang berhasil:
+
+- login sekarang mengembalikan JWT
+- middleware auth membaca header `Authorization: Bearer ...`
+- token diverifikasi sebelum route berjalan
+- endpoint `GET /auth/me` berhasil mengembalikan user dari token
+
+Pelajaran:
+
+- auth belum benar-benar terasa selesai hanya dengan login sukses
+- protected route adalah bukti bahwa token bisa dipakai untuk mengakses resource yang dijaga
+- memperluas type `Express.Request` membantu TypeScript mengenali `req.user`
+
+Istilah penting:
+
+- `Bearer token`
+- `protected route`
+- `request augmentation`
+
+### 22. Fitur inti Arsipin sebaiknya dimulai dari metadata dokumen dulu
+
+Keputusan yang dipilih:
+
+- backend document dimulai dari metadata dulu, bukan langsung upload file
+- endpoint pertama yang dibuat adalah `POST /documents` dan `GET /documents`
+
+Kenapa langkah ini sehat:
+
+- auth yang sudah dibuat langsung dipakai di fitur nyata
+- kontrak backend untuk dokumen mulai stabil sebelum frontend dibangun
+- upload file bisa menyusul setelah struktur data dan alur dokumen lebih jelas
+
+Catatan produk yang muncul:
+
+- sistem arsip nanti bisa menyimpan file asli, tetapi file sebaiknya dipisah dari metadata database
+- `expiredDate` lebih aman dipakai untuk status dan reminder, bukan auto-delete
+- keputusan perpanjang, arsipkan, atau hapus sebaiknya tetap ada di tangan user
+
+Istilah penting:
+
+- `metadata`
+- `object storage`
+- `expiry status`
+- `manual retention decision`
+
+### 23. Pipeline branch membantu mendeteksi masalah sebelum pull request
+
+Perubahan yang dipilih:
+
+- workflow `CI`, `Security`, dan `CodeQL` tidak hanya berjalan untuk `main`
+- branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**` juga ikut memicu pipeline saat `push`
+
+Kenapa ini berguna:
+
+- developer bisa melihat status branch lebih awal sebelum membuka PR
+- masalah build atau security tidak menumpuk di tahap review
+- feedback loop jadi lebih cepat dan lebih tenang
+
+Pelajaran:
+
+- pipeline yang hanya aktif di PR kadang terlambat memberi sinyal
+- menjalankan validasi sejak branch kerja membantu menjaga kualitas tanpa harus menunggu merge gate
+
+Istilah penting:
+
+- `branch pipeline`
+- `feedback loop`
+- `push trigger`
+
+### 24. Urutan middleware memengaruhi hasil security analysis
+
+Kasus yang terjadi:
+
+- rate limiter sudah dipasang, tetapi CodeQL masih menandai route sebagai `Missing rate limiting`
+- penyebabnya adalah urutan middleware masih menempatkan authorization sebelum limiter pada route protected
+
+Solusi yang dipakai:
+
+- pasang rate limiter sebelum `authMiddleware` pada route yang dilindungi
+
+Pelajaran:
+
+- urutan middleware bukan hanya soal runtime behavior, tetapi juga memengaruhi bagaimana static analysis membaca kontrol keamanan
+- untuk route yang dilindungi, pembatasan request sebaiknya terjadi seawal mungkin
+
+Istilah penting:
+
+- `middleware order`
+- `rate limiting`
+- `static analysis`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
-- Finalisasi ruleset atau branch protection untuk `main`
-- Verifikasi bahwa direct push ke `main` benar-benar tertolak dan required checks terbaca di pull request
-- Wajib pull request sebelum merge
-- Required status checks yang relevan dengan kondisi repo
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya
 
-- Membuat endpoint login
+- Melengkapi document CRUD
+- Menambahkan validasi input yang lebih kuat
+- Menentukan desain upload file dan storage
+- Menambahkan status `expiring_soon` dan `expired`
 - Menambahkan automated tests
 - Menambahkan deployment workflow
 - Belajar Docker untuk packaging aplikasi

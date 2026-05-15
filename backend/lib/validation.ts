@@ -13,7 +13,36 @@ export function normalizeString(value: unknown) {
 }
 
 export function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (email.includes(" ")) {
+    return false;
+  }
+
+  const atIndex = email.indexOf("@");
+
+  if (atIndex <= 0 || atIndex !== email.lastIndexOf("@")) {
+    return false;
+  }
+
+  const localPart = email.slice(0, atIndex);
+  const domainPart = email.slice(atIndex + 1);
+
+  if (!localPart || !domainPart) {
+    return false;
+  }
+
+  if (domainPart.startsWith(".") || domainPart.endsWith(".")) {
+    return false;
+  }
+
+  if (!domainPart.includes(".")) {
+    return false;
+  }
+
+  if (domainPart.includes("..")) {
+    return false;
+  }
+
+  return true;
 }
 
 export function isValidDateInput(value: unknown) {

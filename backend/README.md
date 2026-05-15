@@ -17,6 +17,8 @@ Yang sudah tersedia:
 - `PUT /documents/:id`
 - `DELETE /documents/:id`
 - JWT helper reusable
+- shared input validation helper
+- shared HTTP error response helper
 - auth middleware
 - rate limiting dasar untuk route auth dan route protected
 
@@ -30,6 +32,9 @@ Catatan:
 
 - Workflow deployment staging dan production sudah mulai disiapkan di `.github/workflows/`, tetapi backend belum dihubungkan ke target hosting final.
 - Untuk saat ini fokus backend masih di API, validasi, dan fondasi deploy, bukan eksekusi deployment production penuh.
+- route auth sekarang memvalidasi required fields, format email, dan minimum password length
+- route documents sekarang memvalidasi title dan format `expiredDate` sebelum write ke database
+- error response backend mulai dirapikan lewat helper `backend/lib/http.ts`
 
 ## Setup
 
@@ -68,3 +73,4 @@ CORS_ORIGIN=http://localhost:3000
 - Prisma runtime memakai `@prisma/adapter-pg`
 - document saat ini masih berupa metadata di database
 - file upload/storage belum diterapkan
+- validasi email saat ini memakai pendekatan non-regex sederhana agar tidak memicu alert CodeQL tentang regex performance risk

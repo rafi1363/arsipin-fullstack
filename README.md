@@ -28,7 +28,11 @@ Documents:
 Catatan implementasi:
 
 - JWT helper dipusatkan di `backend/lib/jwt.ts`
+- validasi input dasar dipusatkan di `backend/lib/validation.ts`
+- error response dasar dipusatkan di `backend/lib/http.ts`
 - route protected memakai limiter sebelum auth middleware
+- auth memvalidasi required fields, format email, dan minimum password length
+- document create dan update memvalidasi title serta format `expiredDate`
 - akses dokumen tunggal dibatasi dengan ownership check `id + userId`
 - sistem dokumen saat ini masih menyimpan metadata, belum file upload/storage
 
@@ -105,7 +109,7 @@ Deploy workflow:
 
 ## Recommended Next Steps
 
-1. Tambahkan validasi input backend yang lebih kuat, terutama untuk field document dan tanggal.
-2. Lanjutkan search, filter, expiry tracking, dan dashboard summary endpoint.
-3. Setelah kontrak API lebih stabil, mulai bangun UI frontend Arsipin.
-4. Tambahkan automated tests sebelum menghubungkan deploy ke host final.
+1. Lanjutkan search, filter, expiry tracking, dan dashboard summary endpoint.
+2. Setelah kontrak API lebih stabil, mulai bangun UI frontend Arsipin.
+3. Tambahkan automated tests sebelum menghubungkan deploy ke host final.
+4. Hubungkan workflow deploy ke provider hosting final.

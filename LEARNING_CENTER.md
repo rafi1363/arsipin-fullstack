@@ -697,6 +697,47 @@ Istilah penting:
 - `single repo`
 - `provider final`
 
+### 26. Validasi input dasar sebaiknya dipusatkan, bukan ditulis ulang di setiap route
+
+Keputusan:
+
+- validasi string dan tanggal dasar dipusatkan di `backend/lib/validation.ts`
+- response error dasar dipusatkan di `backend/lib/http.ts`
+
+Yang diterapkan:
+
+- `normalizeString(value)` untuk merapikan input string
+- `isValidEmail(email)` untuk validasi format email dasar
+- `isValidDateInput(value)` untuk mencegah tanggal invalid langsung masuk ke parsing tanggal
+- `sendError(res, status, message)` untuk menjaga bentuk error response tetap konsisten
+
+Pelajaran utama:
+
+- validasi yang ditulis langsung berulang di setiap route cepat menjadi berantakan
+- helper kecil sering lebih cukup dan lebih mudah dipahami daripada langsung memakai library besar
+- penting membedakan field yang `undefined` dengan field yang dikirim tetapi kosong
+- input seperti `"   "` sebaiknya tidak dianggap valid untuk field penting seperti `name`, `email`, dan `title`
+- parsing tanggal tidak boleh dipakai mentah tanpa memastikan inputnya valid lebih dulu
+
+Kasus nyata yang muncul:
+
+- CodeQL menandai regex email awal sebagai performance risk pada input user
+- solusi yang dipilih adalah mengganti validasi email dasar ke pendekatan non-regex yang lebih aman untuk kasus project ini
+
+Makna praktis di project ini:
+
+- route auth sekarang lebih jelas dalam memvalidasi `name`, `email`, dan `password`
+- route document sekarang lebih aman sebelum menulis `expiredDate` ke database
+- konsistensi error response membantu debugging dan memudahkan frontend nanti
+
+Istilah penting:
+
+- `input normalization`
+- `shared validation helper`
+- `undefined vs empty string`
+- `consistent error response`
+- `regex performance risk`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
@@ -707,7 +748,6 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 ## Daftar Belajar Berikutnya
 
-- Menambahkan validasi input yang lebih kuat
 - Menambahkan search, filter, dan dashboard summary
 - Menentukan desain upload file dan storage
 - Menambahkan status `expiring_soon` dan `expired`

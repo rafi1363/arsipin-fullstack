@@ -87,13 +87,16 @@ Catatan:
 - [x] JWT auth middleware / protected routes
 - [x] Reusable JWT helper
 - [x] Basic rate limiting untuk auth dan route protected
+- [x] Shared input validation helper
+- [x] Basic input validation untuk auth routes
+- [x] Basic input validation untuk document routes
+- [x] Shared helper untuk konsistensi error response
 - [x] Endpoint `GET /auth/me`
 - [x] Document create endpoint
 - [x] Document list endpoint
 - [x] Document detail endpoint
 - [x] Document update endpoint
 - [x] Document delete endpoint
-- [ ] Validasi input document yang lebih kuat
 - [ ] Search dan filter dokumen
 - [ ] Expiry tracking
 - [ ] Dashboard summary endpoint
@@ -165,10 +168,13 @@ Catatan implementasi:
 
 - `req.body` dibaca dengan fallback object kosong agar request rusak tidak langsung memicu error destructuring
 - helper JWT dipusatkan di `backend/lib/jwt.ts`
+- validasi input dasar dipusatkan lewat helper di `backend/lib/validation.ts`
+- error response dasar mulai diseragamkan lewat helper di `backend/lib/http.ts`
 - middleware auth memakai helper verifikasi token yang sama agar reusable
 - request type Express diperluas agar `req.user` bisa dipakai dengan aman di route terlindungi
 - rate limiting dasar sudah dipasang untuk route auth dan route protected
 - urutan middleware protected route sudah disesuaikan agar limiter berjalan sebelum auth check
+- validasi email diubah ke pendekatan non-regex sederhana setelah CodeQL menandai regex email sebelumnya sebagai performance risk
 
 ### Prisma Dan Database
 
@@ -187,6 +193,7 @@ Catatan:
 - endpoint `GET /documents` sudah aktif untuk mengambil daftar dokumen milik user yang login
 - endpoint detail sudah aktif dan membatasi akses berdasarkan `id` + `userId`
 - endpoint update dan delete sudah aktif dengan pola ownership check yang sama
+- create dan update document sekarang sudah memvalidasi title serta format `expiredDate` sebelum write ke database
 
 ### Code Quality Dan Security Feedback
 
@@ -195,6 +202,7 @@ Status terbaru yang penting:
 - pipeline branch sekarang juga berjalan saat `push` ke branch kerja yang sesuai pola
 - CodeQL sempat menandai route auth dan documents sebagai `Missing rate limiting`
 - perbaikan yang diterapkan adalah menambahkan limiter reusable dan memastikan limiter dijalankan sebelum middleware auth pada route protected
+- CodeQL juga sempat menandai regex email awal sebagai risk pada input user, lalu validasi email diganti ke pendekatan non-regex yang lebih aman
 
 Makna praktis:
 
@@ -293,10 +301,9 @@ Hasil:
 
 Urutan yang paling masuk akal dari kondisi sekarang:
 
-1. Tambahkan validasi input yang lebih rapi, terutama untuk tanggal dan field document.
-2. Tambahkan search, filter, dan expiry tracking berbasis status.
-3. Tambahkan dashboard summary endpoint.
-4. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
-5. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
-6. Tambahkan automated tests.
-7. Hubungkan workflow deploy ke provider hosting final.
+1. Tambahkan search, filter, dan expiry tracking berbasis status.
+2. Tambahkan dashboard summary endpoint.
+3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
+4. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
+5. Tambahkan automated tests.
+6. Hubungkan workflow deploy ke provider hosting final.

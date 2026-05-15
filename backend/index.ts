@@ -2,6 +2,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 
+import authRouter from "./routes/auth";
+
 dotenv.config();
 
 const app = express();
@@ -27,6 +29,8 @@ app.get("/health", (_req, res) => {
     status: "ok",
   });
 });
+
+app.use("/auth", authRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

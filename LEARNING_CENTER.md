@@ -202,6 +202,164 @@ Istilah penting:
 - `default formatter`
 - `workspace settings`
 
+### 9. Bootstrap backend Express dengan TypeScript
+
+Milestone yang sudah berhasil:
+
+- `backend/index.ts` tidak lagi placeholder
+- server Express sudah bisa berjalan
+- route `GET /` dan `GET /health` sudah berhasil dites
+- `bun run prisma:generate` dan `bun run typecheck` lulus
+
+Pelajaran utama:
+
+- Express app dimulai dari `const app = express()`
+- middleware seperti `cors()` dan `express.json()` didaftarkan dengan `app.use(...)`
+- health endpoint adalah endpoint sederhana untuk memastikan service hidup
+- TypeScript di backend tetap terasa seperti JavaScript, tetapi memberi bantuan tipe saat project mulai membesar
+
+Perbedaan rasa antara JavaScript dan TypeScript di tahap ini:
+
+- struktur route dan middleware tetap mirip Express biasa
+- TypeScript mulai terasa saat file dipisah, request body divalidasi, dan Prisma dipakai
+- tidak semua hal harus langsung diberi tipe yang rumit; mulai dari yang sederhana lalu diperjelas bertahap
+
+Istilah penting:
+
+- `middleware`
+- `route handler`
+- `health check`
+- `request body`
+
+### 10. Struktur backend bertahap
+
+Struktur yang sedang mulai dipakai:
+
+- `backend/index.ts` untuk bootstrap server
+- `backend/lib/prisma.ts` untuk Prisma client shared
+- `backend/routes/auth.ts` untuk route auth
+
+Kenapa dipisah:
+
+- `index.ts` fokus ke wiring aplikasi
+- file `lib` fokus ke utilitas inti
+- file `routes` fokus ke endpoint
+
+Pelajaran:
+
+- memisahkan file sejak awal membantu project tetap mudah dibaca saat fitur bertambah
+- Express kecil masih bisa satu file, tapi auth + database lebih nyaman kalau mulai dipisah
+
+Istilah penting:
+
+- `bootstrap`
+- `shared client`
+- `router`
+
+### 11. Prisma 7 membutuhkan driver adapter saat runtime
+
+Masalah yang terjadi:
+
+- `bun run dev` gagal saat membuat `PrismaClient`
+- error menunjukkan bahwa `PrismaClient` membutuhkan `PrismaClientOptions` yang valid
+
+Akar masalah:
+
+- pada Prisma 7, konfigurasi di `prisma.config.ts` membantu Prisma CLI
+- tetapi saat aplikasi berjalan, `PrismaClient` untuk PostgreSQL tetap membutuhkan driver adapter
+
+Solusi yang dipakai:
+
+- install `@prisma/adapter-pg`
+- install `pg`
+- gunakan `PrismaPg` di `backend/lib/prisma.ts`
+- buat `new PrismaClient({ adapter })`
+
+Pelajaran:
+
+- konfigurasi CLI dan konfigurasi runtime tidak selalu sama
+- membaca error runtime dengan tenang sering kali menunjukkan perubahan konsep library, bukan sekadar typo
+
+Istilah penting:
+
+- `driver adapter`
+- `runtime configuration`
+- `connection string`
+
+### 12. Endpoint register pertama
+
+Milestone yang berhasil:
+
+- route `POST /auth/register` berhasil dibuat
+- request berhasil menyimpan user ke database
+- password berhasil di-hash dengan `bcrypt`
+- response tidak mengembalikan password hash
+
+Flow register yang dipakai:
+
+1. baca `name`, `email`, `password` dari `req.body`
+2. validasi field wajib
+3. cek apakah email sudah ada
+4. hash password
+5. simpan user ke database
+6. return data aman ke client
+
+Contoh hasil sukses:
+
+```json
+{
+  "message": "User Registered successfully",
+  "user": {
+    "id": "...",
+    "name": "Rafi",
+    "email": "rafi@example.com",
+    "createdAt": "..."
+  }
+}
+```
+
+Pelajaran:
+
+- endpoint auth sebaiknya mengembalikan hanya data yang aman
+- field `password` tetap disimpan di database, tetapi tidak boleh dikirim balik ke frontend
+- `try/catch` penting untuk menjaga API tetap memberi response yang jelas saat terjadi error
+
+Istilah penting:
+
+- `hashing`
+- `select`
+- `409 conflict`
+- `201 created`
+
+### 13. Menjalankan project di device lain
+
+Repo ini bisa di-clone di laptop atau PC lain, tetapi tetap perlu setup environment lokal.
+
+Yang biasanya perlu dilakukan ulang di device baru:
+
+- install Bun
+- install dependency dengan `bun install`
+- siapkan file `.env`
+- generate Prisma Client
+
+Hal yang tidak perlu dibuat ulang dari nol:
+
+- source code
+- workflow GitHub Actions
+- file dokumentasi project
+- struktur branch yang sudah ada di remote GitHub
+
+Pelajaran:
+
+- Git menyinkronkan source code dan histori
+- konfigurasi lokal seperti runtime, dependency, dan secret tetap perlu disiapkan di setiap device
+
+Istilah penting:
+
+- `clone`
+- `local environment`
+- `runtime dependency`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
@@ -215,7 +373,7 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 ## Daftar Belajar Berikutnya
 
-- Membuat backend Express yang benar-benar hidup
+- Membuat endpoint login
 - Menambahkan automated tests
 - Menambahkan deployment workflow
 - Belajar Docker untuk packaging aplikasi

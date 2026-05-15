@@ -440,6 +440,172 @@ Pendekatan kerja yang dipilih:
 - assistant memberi instruksi, penjelasan struktur, dan review
 - setiap pembelajaran baru dicatat di `LEARNING_CENTER.md`
 - setiap perubahan penting diringkas di `PROJECT_RECAP.md`
+
+## Progress Backend Express
+
+Milestone backend awal sudah berhasil dijalankan.
+
+Yang sudah selesai:
+
+- `backend/index.ts` diubah dari placeholder menjadi Express server minimal
+- middleware `cors` dan `express.json()` sudah dipakai
+- route `GET /` mengembalikan pesan:
+
+```json
+{"message":"Arsipin backend is running"}
+```
+
+- route `GET /health` mengembalikan:
+
+```json
+{"status":"ok"}
+```
+
+Validasi yang berhasil dijalankan:
+
+```bash
+curl http://localhost:5000/
+curl http://localhost:5000/health
+cd backend
+bun run prisma:generate
+bun run typecheck
+```
+
+Hasil:
+
+- endpoint root berhasil
+- endpoint health berhasil
+- Prisma Client berhasil di-generate
+- TypeScript typecheck lulus
+
+## Progress GitHub Dan PR
+
+User sudah:
+
+- push perubahan backend ke branch terbaru
+- membuat pull request ke `main`
+
+PR yang terdeteksi:
+
+- `#8` dari branch `feature/auth-backend`
+
+## Langkah Belajar Berikutnya
+
+Setelah bootstrap backend berjalan, fokus berikutnya adalah auth register dengan struktur file yang lebih rapi.
+
+File yang disiapkan user:
+
+- `backend/lib/prisma.ts`
+- `backend/routes/auth.ts`
+
+Tujuan tahap berikutnya:
+
+- membuat shared Prisma client
+- menambahkan router auth
+- membuat endpoint `POST /auth/register`
+- validasi input `name`, `email`, dan `password`
+- hash password dengan `bcrypt`
+- simpan user ke database tanpa mengembalikan password hash
+
+Catatan pembelajaran:
+
+- user lebih terbiasa dengan JavaScript daripada TypeScript
+- pendekatan yang dipilih adalah belajar sambil mengetik sendiri
+- assistant memberi contoh kode, penjelasan struktur, dan review hasil implementasi
+
+## Prisma 7 Runtime Fix
+
+Saat route auth mulai memakai Prisma, backend sempat gagal dijalankan.
+
+Error utama:
+
+- `PrismaClientInitializationError`
+- `PrismaClient` pada runtime meminta `PrismaClientOptions` yang valid
+
+Akar masalah:
+
+- project memakai Prisma 7
+- Prisma CLI sudah dikonfigurasi lewat `prisma.config.ts`
+- tetapi Prisma Client runtime untuk PostgreSQL membutuhkan driver adapter
+
+Perbaikan yang diterapkan:
+
+- install `@prisma/adapter-pg`
+- install `pg`
+- update `backend/lib/prisma.ts` agar memakai `PrismaPg`
+- inisialisasi client menjadi `new PrismaClient({ adapter })`
+
+Hasil:
+
+- `bun run dev` kembali berjalan normal
+- backend bisa mengakses database Neon melalui Prisma 7
+
+## Progress Auth Register
+
+Tahap auth register pertama berhasil dijalankan dengan struktur file terpisah.
+
+File yang dipakai:
+
+- `backend/index.ts`
+- `backend/lib/prisma.ts`
+- `backend/routes/auth.ts`
+
+Flow endpoint `POST /auth/register`:
+
+- baca `name`, `email`, `password`
+- validasi field wajib
+- cek duplicate email
+- hash password dengan `bcrypt`
+- simpan user ke database lewat Prisma
+- kembalikan data user tanpa password hash
+
+Hasil testing sukses:
+
+```bash
+curl -X POST http://localhost:5000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Rafi","email":"rafi@example.com","password":"password123"}'
+```
+
+Response yang diterima:
+
+```json
+{
+  "message": "User Registered successfully",
+  "user": {
+    "id": "cmp6jwcua0000b11y2hvcgzz7",
+    "name": "Rafi",
+    "email": "rafi@example.com",
+    "createdAt": "2026-05-15T06:43:07.906Z"
+  }
+}
+```
+
+Status validasi:
+
+- `bun run dev`: berhasil
+- `bun run prisma:generate`: berhasil
+- `bun run typecheck`: berhasil
+- `POST /auth/register`: berhasil
+
+## Catatan Multi-Device
+
+Project ini bisa di-clone ke device lain seperti PC, tetapi environment lokal tetap perlu disiapkan ulang.
+
+Yang perlu dilakukan di device baru:
+
+- clone repository
+- install Bun
+- jalankan `bun install` di `backend` dan `frontend`
+- salin `.env.example` menjadi file `.env` yang sesuai
+- jalankan `bun run prisma:generate`
+
+Yang otomatis ikut saat clone:
+
+- source code terbaru
+- workflow GitHub
+- dokumentasi project
+- histori commit dan branch remote
 - CodeQL aktif.
 - Dependabot aktif.
 - Secret tidak masuk Git.

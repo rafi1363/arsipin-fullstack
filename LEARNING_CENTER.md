@@ -115,13 +115,100 @@ Istilah penting:
 - `version pinning`
 - `immutable commit SHA`
 
+### 6. Branch protection untuk solo repository
+
+Kondisi yang dipilih untuk `main`:
+
+- `Require a pull request before merging`: aktif
+- `Require status checks to pass before merging`: aktif
+- `Require branches to be up to date before merging`: aktif
+- Required checks diperluas agar mencakup job utama dan security scan
+- `Allow force pushes`: nonaktif
+- `Allow deletions`: nonaktif
+
+Catatan praktik:
+
+- Untuk solo developer, branch protection tetap berguna karena memaksa setiap perubahan melewati PR dan pipeline.
+- Approval review tidak wajib dijadikan pagar utama di fase awal jika justru membuat alur terlalu berat.
+- Status checks sebaiknya tidak hanya security, tapi juga validasi build utama.
+
+Status checks yang sehat untuk repo ini:
+
+- `Backend`
+- `Frontend`
+- `CodeQL`
+- `Dependency Scan`
+- `Secret Scan`
+
+Istilah penting:
+
+- `branch protection`
+- `required checks`
+- `up to date before merging`
+
+### 7. Membersihkan branch lokal dan remote
+
+Perintah penting:
+
+- Hapus branch lokal:
+
+```bash
+git branch -d nama-branch
+```
+
+- Hapus branch remote di GitHub:
+
+```bash
+git push origin --delete nama-branch
+```
+
+- Bersihkan referensi remote yang sudah basi di lokal:
+
+```bash
+git fetch --prune
+```
+
+Pelajaran:
+
+- Menghapus branch lokal tidak otomatis menghapus branch di GitHub.
+- `git fetch --prune` tidak menghapus branch di remote; ia hanya membersihkan daftar remote-tracking branch di mesin lokal.
+
+Istilah penting:
+
+- `remote branch`
+- `remote-tracking branch`
+- `prune`
+
+### 8. Setup Prettier untuk format on save
+
+Setup minimum yang cukup untuk backend saat ini:
+
+- Tambahkan `prettier` sebagai `devDependency` di `backend`
+- Tambahkan script:
+  - `format`
+  - `format:check`
+- Buat `.vscode/settings.json` di root workspace
+- Pastikan extension `Prettier - Code formatter` aktif di editor
+
+Kenapa tidak perlu menambahkan semuanya sekaligus:
+
+- Fokus sekarang adalah backend, jadi formatter lokal di `backend` dan workspace setting di root sudah cukup.
+- Frontend bisa menyusul setelah workflow backend dasar stabil.
+- Tooling yang terlalu banyak di awal bisa membuat belajar terseret ke konfigurasi, bukan ke pemahaman aplikasi.
+
+Istilah penting:
+
+- `format on save`
+- `default formatter`
+- `workspace settings`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 - Branch protection untuk `main`
 - Wajib pull request sebelum merge
-- Required status checks: `CI`, `CodeQL`, dan `Security`
+- Required status checks yang relevan dengan kondisi repo
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai

@@ -92,6 +92,29 @@ Istilah penting:
 - `least privilege`
 - `workflow token`
 
+### 5. Version pinning pada GitHub Actions
+
+Kasus yang terjadi:
+
+- Pipeline `Security` gagal karena `aquasecurity/trivy-action@0.33.1` tidak bisa di-resolve.
+
+Pelajaran:
+
+- Versi action harus mengikuti tag yang benar-benar tersedia di upstream repository atau Marketplace.
+- Untuk `trivy-action`, dokumentasi resmi dan GitHub Marketplace saat ini menggunakan `v0.36.0`, bukan `0.33.1`.
+- Saat workflow gagal di tahap `unable to resolve action`, cek dulu apakah nama action dan tag versinya masih valid.
+
+Praktik yang sehat:
+
+- Gunakan versi yang tercantum di dokumentasi resmi.
+- Lebih aman lagi, untuk action yang sensitif secara security, pertimbangkan pin ke commit SHA immutable setelah workflow stabil.
+
+Istilah penting:
+
+- `action tag`
+- `version pinning`
+- `immutable commit SHA`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:

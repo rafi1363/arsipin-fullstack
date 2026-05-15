@@ -273,6 +273,38 @@ Catatan Git:
 
 - File `PROJECT_RECAP.md` masih untracked sebelum sesi ini.
 - Untuk update besar berikutnya, disarankan kerja di branch sesuai topik dan push branch tersebut ke GitHub agar histori perubahan lebih rapi.
+
+## Perbaikan Pipeline Security
+
+Setelah workflow `Security` ditambahkan, job `Dependency Scan` gagal saat memuat Trivy action.
+
+Error utama:
+
+- GitHub Actions tidak bisa me-resolve `aquasecurity/trivy-action@0.33.1`
+
+Perbaikan:
+
+- Mengganti referensi action di `.github/workflows/security.yml` dari:
+
+```txt
+aquasecurity/trivy-action@0.33.1
+```
+
+menjadi:
+
+```txt
+aquasecurity/trivy-action@v0.36.0
+```
+
+Alasan:
+
+- Dokumentasi resmi repository `aquasecurity/trivy-action` dan GitHub Marketplace saat ini memakai `v0.36.0`.
+- Ini juga menghindari kegagalan akibat tag action yang tidak cocok dengan format versi upstream saat ini.
+
+Pelajaran operasional:
+
+- Jika GitHub Actions gagal di tahap `unable to resolve action`, verifikasi nama action dan tag versi ke sumber resmi terlebih dahulu.
+- Untuk action yang penting secara security, pertimbangkan pin ke commit SHA immutable setelah versi stabil dipilih.
 - PR merah tidak dilanjutkan.
 
 ## Dependabot Updates Yang Sudah Masuk Main

@@ -114,7 +114,7 @@ authRouter.post("/login", authRateLimiter, async (req, res) => {
   }
 });
 
-authRouter.get("/me", authMiddleware, protectedRouteLimiter, async (req, res) => {
+authRouter.get("/me", protectedRouteLimiter, authMiddleware, async (req, res) => {
   return res.status(200).json({
     message: "Authenticated user",
     user: req.user,

@@ -6,7 +6,7 @@ import { protectedRouteLimiter } from "../middlewares/rate-limit";
 
 const documentsRouter = Router();
 
-documentsRouter.post("/", authMiddleware, protectedRouteLimiter, async (req, res) => {
+documentsRouter.post("/", protectedRouteLimiter, authMiddleware, async (req, res) => {
   try {
     const { title, description, expiredDate } = req.body ?? {};
     const userId = req.user?.userId;
@@ -39,7 +39,7 @@ documentsRouter.post("/", authMiddleware, protectedRouteLimiter, async (req, res
   }
 });
 
-documentsRouter.get("/", authMiddleware, protectedRouteLimiter, async (req, res) => {
+documentsRouter.get("/", protectedRouteLimiter, authMiddleware, async (req, res) => {
   try {
     const userId = req.user?.userId;
 

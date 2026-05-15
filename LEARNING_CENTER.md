@@ -609,21 +609,66 @@ Istilah penting:
 - `expiry status`
 - `manual retention decision`
 
+### 23. Pipeline branch membantu mendeteksi masalah sebelum pull request
+
+Perubahan yang dipilih:
+
+- workflow `CI`, `Security`, dan `CodeQL` tidak hanya berjalan untuk `main`
+- branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**` juga ikut memicu pipeline saat `push`
+
+Kenapa ini berguna:
+
+- developer bisa melihat status branch lebih awal sebelum membuka PR
+- masalah build atau security tidak menumpuk di tahap review
+- feedback loop jadi lebih cepat dan lebih tenang
+
+Pelajaran:
+
+- pipeline yang hanya aktif di PR kadang terlambat memberi sinyal
+- menjalankan validasi sejak branch kerja membantu menjaga kualitas tanpa harus menunggu merge gate
+
+Istilah penting:
+
+- `branch pipeline`
+- `feedback loop`
+- `push trigger`
+
+### 24. Urutan middleware memengaruhi hasil security analysis
+
+Kasus yang terjadi:
+
+- rate limiter sudah dipasang, tetapi CodeQL masih menandai route sebagai `Missing rate limiting`
+- penyebabnya adalah urutan middleware masih menempatkan authorization sebelum limiter pada route protected
+
+Solusi yang dipakai:
+
+- pasang rate limiter sebelum `authMiddleware` pada route yang dilindungi
+
+Pelajaran:
+
+- urutan middleware bukan hanya soal runtime behavior, tetapi juga memengaruhi bagaimana static analysis membaca kontrol keamanan
+- untuk route yang dilindungi, pembatasan request sebaiknya terjadi seawal mungkin
+
+Istilah penting:
+
+- `middleware order`
+- `rate limiting`
+- `static analysis`
+
 ## Hal Yang Masih Perlu Diterapkan Manual Di GitHub
 
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
-- Finalisasi ruleset atau branch protection untuk `main`
-- Verifikasi bahwa direct push ke `main` benar-benar tertolak dan required checks terbaca di pull request
-- Wajib pull request sebelum merge
-- Required status checks yang relevan dengan kondisi repo
 - Aturan approval bila nanti project mulai kolaboratif
 - GitHub Environments untuk `staging` dan `production`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya
 
-- Membuat endpoint login
+- Melengkapi document CRUD
+- Menambahkan validasi input yang lebih kuat
+- Menentukan desain upload file dan storage
+- Menambahkan status `expiring_soon` dan `expired`
 - Menambahkan automated tests
 - Menambahkan deployment workflow
 - Belajar Docker untuk packaging aplikasi

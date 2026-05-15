@@ -8,9 +8,9 @@ Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan doku
 
 Kondisi repo saat ini:
 
-- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, dan endpoint document pertama.
+- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, dan endpoint document create/list.
 - Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
-- Pipeline GitHub untuk CI dan security baseline sudah ada dan validasi utama sudah bisa dijalankan.
+- Pipeline GitHub untuk CI, security baseline, dan branch workflow dasar sudah ada dan validasi utama sudah bisa dijalankan.
 - Proteksi branch `main` sudah terverifikasi menolak direct push dan memaksa alur branch plus pull request.
 
 ## Stack Saat Ini
@@ -55,6 +55,7 @@ arsipin-fullstack/
 - [x] Workflow `CodeQL`
 - [x] Workflow `Security` dengan `Gitleaks` dan `Trivy`
 - [x] Dependabot untuk backend, frontend, dan GitHub Actions
+- [x] Pipeline branch feature/fix/chore/docs saat push
 - [x] Backend `prisma:generate` lulus
 - [x] Backend `typecheck` lulus
 - [x] Frontend `lint` lulus
@@ -81,6 +82,8 @@ Catatan:
 - [x] Endpoint `POST /auth/login`
 - [x] JWT token generation
 - [x] JWT auth middleware / protected routes
+- [x] Reusable JWT helper
+- [x] Basic rate limiting untuk auth dan route protected
 - [x] Endpoint `GET /auth/me`
 - [x] Document create endpoint
 - [x] Document list endpoint
@@ -124,6 +127,7 @@ Yang sudah aktif:
 - `GET /` mengembalikan pesan backend aktif
 - `GET /health` mengembalikan status `ok`
 - router `/auth` sudah terpasang
+- router `/documents` sudah terpasang
 
 ### Auth Dan JWT
 
@@ -159,6 +163,8 @@ Catatan implementasi:
 - helper JWT dipusatkan di `backend/lib/jwt.ts`
 - middleware auth memakai helper verifikasi token yang sama agar reusable
 - request type Express diperluas agar `req.user` bisa dipakai dengan aman di route terlindungi
+- rate limiting dasar sudah dipasang untuk route auth dan route protected
+- urutan middleware protected route sudah disesuaikan agar limiter berjalan sebelum auth check
 
 ### Prisma Dan Database
 
@@ -177,6 +183,19 @@ Catatan:
 - endpoint `GET /documents` sudah aktif untuk mengambil daftar dokumen milik user yang login
 - endpoint detail, update, dan delete masih belum dibuat
 
+### Code Quality Dan Security Feedback
+
+Status terbaru yang penting:
+
+- pipeline branch sekarang juga berjalan saat `push` ke branch kerja yang sesuai pola
+- CodeQL sempat menandai route auth dan documents sebagai `Missing rate limiting`
+- perbaikan yang diterapkan adalah menambahkan limiter reusable dan memastikan limiter dijalankan sebelum middleware auth pada route protected
+
+Makna praktis:
+
+- security feedback tidak selalu berarti desain salah total; kadang yang perlu diperbaiki adalah bentuk wiring middleware
+- urutan middleware sekarang menjadi bagian dari baseline keamanan backend ini
+
 ## Progress GitHub Workflow Dan Protection
 
 ### Workflow Yang Sudah Ada
@@ -193,6 +212,12 @@ Job/check penting yang dipakai saat ini:
 - `Analyze`
 - `Secret Scan`
 - `Dependency Scan`
+
+Catatan:
+
+- workflow tidak lagi terbatas ke `main`
+- branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**` sekarang juga memicu pipeline saat `push`
+- ini membantu melihat status branch sebelum membuat pull request
 
 ### Status Proteksi Branch `main`
 
@@ -229,6 +254,7 @@ Backend:
 
 ```bash
 cd backend
+bun install
 bun run prisma:generate
 bun run typecheck
 ```
@@ -252,7 +278,6 @@ Hasil:
 
 - `backend/.env` tetap tidak dibaca atau disalin ke dokumentasi agar secret aman.
 - Workspace settings editor ada secara lokal, tetapi `.vscode/` tetap di-ignore dari Git.
-- `backend/README.md` dan `frontend/README.md` masih berisi template awal dan belum sepenuhnya mengikuti kondisi implementasi terbaru.
 - sistem dokumen saat ini baru menyimpan metadata dokumen di database; upload file arsip asli belum diterapkan
 - strategi expiry yang disarankan adalah status dan reminder, bukan auto-delete, agar arsip penting tidak hilang otomatis
 

@@ -99,6 +99,7 @@ Catatan:
 - [x] Document detail endpoint
 - [x] Document update endpoint
 - [x] Document delete endpoint
+- [ ] Validasi input document yang lebih kuat
 - [ ] Search dan filter dokumen
 - [ ] Expiry tracking
 - [ ] Dashboard summary endpoint

@@ -162,7 +162,7 @@ documentsRouter.put(
         return sendError(res, 400, "At least one field is required to update");
       }
 
-      if (title !== undefined && normalizedTitle) {
+      if (title !== undefined && !normalizedTitle) {
         return sendError(res, 400, "Title cannot be empty");
       }
 

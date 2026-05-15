@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 
 import authRouter from "./routes/auth";
+import documentsRouter from "./routes/documents";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/documents", documentsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

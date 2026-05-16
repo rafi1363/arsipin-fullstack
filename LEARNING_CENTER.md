@@ -875,3 +875,29 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 - Menentukan target host final untuk staging dan production
 - Belajar Docker untuk packaging aplikasi
 - Belajar monitoring, logging, health check, dan backup
+
+### 28. Saat backend dasar sudah cukup matang, prioritas sehat biasanya pindah ke integrasi frontend
+
+Kondisi yang terjadi di Arsipin:
+
+- backend sudah punya auth dasar, CRUD metadata dokumen, search/filter/sort, dan summary dashboard
+- frontend masih template awal `Next.js`
+
+Pelajaran:
+
+- tidak semua backlog backend harus dihabiskan sebelum frontend dimulai
+- saat kontrak API utama sudah cukup stabil, membangun UI akan membantu menemukan gap yang benar-benar penting
+- banyak kebutuhan enhancement backend justru baru terlihat jelas setelah flow UI dipakai
+
+Makna praktis untuk repo ini:
+
+- prioritas berikutnya paling masuk akal adalah login, dashboard, dan list dokumen di frontend
+- automated tests backend tetap penting, tetapi bisa masuk setelah flow utama pengguna mulai terbentuk
+- upload file, reminder, dan hosting final adalah milestone lanjutan, bukan blocker untuk mulai mengerjakan MVP UI
+
+Istilah penting:
+
+- `frontend-first after backend contract`
+- `MVP flow`
+- `API contract`
+- `product feedback loop`

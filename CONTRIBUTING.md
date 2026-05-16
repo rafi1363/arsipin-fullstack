@@ -86,6 +86,8 @@ Jika perubahan cukup besar:
 
 - perbarui `PROJECT_RECAP.md`,
 - tambahkan pelajaran baru ke `LEARNING_CENTER.md`.
+- sinkronkan `README.md` bila ada perubahan yang mengubah gambaran umum repo.
+- sinkronkan `recap.md` bila kamu memakai file itu sebagai handoff konteks kerja terbaru.
 
 Jika perubahan menyentuh keamanan atau operasional:
 

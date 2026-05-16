@@ -31,3 +31,19 @@ For production, store secrets in the deployment provider:
 ## Reporting
 
 This is currently a learning project. If a vulnerability is found, rotate any affected secrets immediately and patch the code before redeploying.
+
+## Current Repo Security Snapshot
+
+As of `2026-05-16`, the repo already includes:
+
+- CI checks for backend and frontend
+- `CodeQL Analyze`
+- `Gitleaks` secret scanning
+- `Trivy` dependency and filesystem scanning
+- Dependabot updates
+
+Important limitations that still remain:
+
+- deploy workflows are still scaffold and not yet connected to final hosting
+- production CORS and runtime secrets still depend on the future hosting setup
+- automated tests for security-sensitive flows are not implemented yet

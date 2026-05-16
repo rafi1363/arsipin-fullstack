@@ -33,6 +33,34 @@ Walau solo developer, pull request tetap berguna untuk:
 - memaksa perubahan melewati CI,
 - menjaga histori project tetap mudah ditelusuri.
 
+## Optional PR Helper
+
+Repo ini juga mendukung workflow lokal opsional untuk mengisi bagian `Summary` PR secara otomatis.
+
+Yang perlu diketahui:
+
+- placeholder summary ada di `.github/pull_request_template.md`
+- script helper lokal disimpan di `.local-scripts/`
+- `.local-scripts/` sengaja di-ignore dari Git agar tetap menjadi alat bantu lokal
+
+Contoh pemakaian:
+
+```bash
+.local-scripts/pr-create.sh
+```
+
+Atau dengan base branch dan title eksplisit:
+
+```bash
+.local-scripts/pr-create.sh main "feat(frontend): build dashboard shell"
+```
+
+Catatan:
+
+- helper ini membaca branch aktif, commit message, dan file yang berubah untuk mengisi summary
+- helper ini bersifat lokal dan tidak wajib dipakai
+- review isi summary tetap disarankan sebelum PR benar-benar dibuat
+
 ## Validasi Lokal
 
 Backend:

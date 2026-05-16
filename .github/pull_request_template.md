@@ -1,6 +1,6 @@
 ## Summary
 
-- 
+<!-- AUTO_SUMMARY -->
 
 ## Checks
 

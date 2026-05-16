@@ -2,6 +2,7 @@
 
 > Catatan: dokumen ini adalah ringkasan setup awal project dan bersifat historis.
 > Untuk kondisi implementasi terbaru, gunakan `README.md`, `backend/README.md`, `PROJECT_RECAP.md`, dan `LEARNING_CENTER.md` sebagai rujukan utama.
+> Pada kondisi repo saat ini, backend sudah berkembang jauh melampaui tahap setup awal dan sudah mencakup auth, document CRUD, search/filter/sort, serta dashboard summary endpoint.
 
 ## Project Overview
 

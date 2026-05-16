@@ -34,7 +34,7 @@ Yang belum tersedia:
 Catatan:
 
 - Workflow deployment staging dan production sudah mulai disiapkan di `.github/workflows/`, tetapi backend belum dihubungkan ke target hosting final.
-- Untuk saat ini fokus backend masih di API, validasi, dan fondasi deploy, bukan eksekusi deployment production penuh.
+- Untuk saat ini backend sudah cukup siap untuk menopang MVP demo, sementara fokus berikutnya bergeser ke frontend dan automated tests.
 - route auth sekarang memvalidasi required fields, format email, dan minimum password length
 - route documents sekarang memvalidasi title dan format `expiredDate` sebelum write ke database
 - route `GET /documents` sekarang mendukung search, status filter, dan sorting

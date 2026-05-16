@@ -9,7 +9,7 @@ Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen.
 Status repo saat ini:
 
 - backend inti sudah cukup siap untuk MVP demo metadata dokumen
-- frontend masih starter dan belum menjadi UI produk Arsipin
+- frontend sudah punya fondasi UI awal, tetapi auth flow dan halaman aplikasi utama belum jadi
 - pipeline engineering baseline sudah aktif dan cukup rapi untuk ukuran project belajar
 - deployment final masih belum dihubungkan ke provider hosting nyata
 
@@ -67,6 +67,12 @@ Frontend:
 - [x] Tailwind CSS
 - [x] ESLint
 - [x] metadata dasar
+- [x] landing page minimalis awal
+- [x] theme token light/dark dasar
+- [x] reusable UI component dasar
+- [x] shared axios client
+- [x] auth token helper dasar
+- [x] auth API helper dasar
 
 ### Yang belum selesai
 
@@ -81,6 +87,7 @@ Backend enhancement:
 
 Frontend:
 
+- [ ] route `/login`
 - [ ] halaman login/register
 - [ ] integrasi auth ke backend
 - [ ] dashboard summary
@@ -88,6 +95,7 @@ Frontend:
 - [ ] create/edit/delete dokumen
 - [ ] filter/sort/search UI
 - [ ] route protection dan session handling
+- [ ] toggle dark mode manual
 
 Operasional:
 
@@ -130,17 +138,19 @@ Status dokumen yang tersedia:
 
 Urutan kerja yang disarankan dari kondisi repo sekarang:
 
-1. bangun UI auth frontend
-2. sambungkan token auth ke request backend
-3. bangun dashboard summary dari endpoint `/documents/summary`
-4. bangun list dokumen yang memakai `search`, `status`, `sortBy`, dan `sortOrder`
-5. bangun form create dan edit dokumen
-6. tambah detail page atau drawer dokumen
-7. setelah flow UI stabil, tambah automated tests backend
+1. buat route `/login`
+2. bangun form login dan submit ke backend lewat `axios`
+3. simpan token dan bootstrap user lewat `GET /auth/me`
+4. bangun dashboard summary dari endpoint `/documents/summary`
+5. bangun list dokumen yang memakai `search`, `status`, `sortBy`, dan `sortOrder`
+6. bangun form create dan edit dokumen
+7. tambah detail page atau drawer dokumen
+8. setelah flow UI stabil, tambah automated tests backend
 
 ## Catatan Penting
 
 - sistem dokumen saat ini masih menyimpan metadata, belum file upload
-- frontend saat ini masih `page.tsx` template bawaan Next.js
+- homepage frontend sudah berubah dari template default, tetapi route `/login` belum tersedia
+- navigasi internal frontend sudah mulai memakai `next/link`, jadi fondasi SPA-style navigation sudah ada
 - untuk source of truth yang lebih operasional, gunakan `recap.md`
 - untuk keputusan belajar dan alasan engineering, gunakan `LEARNING_CENTER.md`

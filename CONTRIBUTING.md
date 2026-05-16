@@ -88,6 +88,7 @@ Jika perubahan cukup besar:
 - tambahkan pelajaran baru ke `LEARNING_CENTER.md`.
 - sinkronkan `README.md` bila ada perubahan yang mengubah gambaran umum repo.
 - sinkronkan `recap.md` bila kamu memakai file itu sebagai handoff konteks kerja terbaru.
+- jika perubahan ada di frontend foundation, sinkronkan juga `frontend/README.md` agar status UI/auth terbaru tidak tertinggal.
 
 Jika perubahan menyentuh keamanan atau operasional:
 

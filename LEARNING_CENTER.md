@@ -901,3 +901,79 @@ Istilah penting:
 - `MVP flow`
 - `API contract`
 - `product feedback loop`
+
+### 29. Theme token dan reusable component membuat frontend lebih konsisten sejak awal
+
+Kondisi yang diterapkan di Arsipin:
+
+- warna dasar frontend mulai dipusatkan ke CSS custom properties di `globals.css`
+- komponen UI dasar seperti `Button`, `Card`, `Container`, dan `Badge` mulai dipisah ke folder `src/components/ui`
+
+Pelajaran:
+
+- token warna membantu perubahan theme tidak tersebar ke banyak file
+- reusable component membuat keputusan visual lebih konsisten antar halaman
+- langkah ini layak dilakukan lebih awal jika frontend memang akan tumbuh ke beberapa halaman
+
+Makna praktis untuk repo ini:
+
+- halaman login, dashboard, dan list dokumen nanti sebaiknya tidak lagi menulis tombol dan card dari nol
+- perubahan visual cukup diatur dari token atau komponen dasar terlebih dulu
+
+Istilah penting:
+
+- `design token`
+- `reusable component`
+- `visual consistency`
+- `UI foundation`
+
+### 30. Next.js App Router sudah memberi fondasi SPA-style navigation tanpa perlu membuat SPA manual
+
+Kondisi yang dipelajari:
+
+- navigasi internal mulai memakai `next/link`
+- perpindahan halaman internal di Next.js tidak perlu full browser refresh seperti website multi-page tradisional
+
+Pelajaran:
+
+- untuk route internal, `Link` lebih tepat daripada `<a href>`
+- login tidak harus memaksa full refresh; yang dibutuhkan adalah update auth state dan redirect client-side
+- pemahaman ini penting agar arsitektur frontend tidak dibangun dengan asumsi yang salah
+
+Makna praktis untuk repo ini:
+
+- route seperti `/login` dan nanti `/dashboard` sebaiknya memakai navigasi client-side
+- refresh penuh hanya menjadi efek samping tertentu, bukan requirement desain utama
+
+Istilah penting:
+
+- `SPA-style navigation`
+- `client-side transition`
+- `App Router`
+- `next/link`
+
+### 31. Axios dipilih bukan karena lebih cepat, tetapi karena alur auth client lebih rapi
+
+Kondisi yang terjadi:
+
+- frontend Arsipin mulai menambahkan `axios`
+- sudah ada `api.ts`, `auth-api.ts`, dan helper token lokal
+
+Pelajaran:
+
+- `axios` tidak otomatis lebih cepat dari `fetch`
+- keunggulan utamanya ada pada DX: base URL, interceptor, dan error handling yang lebih konsisten
+- untuk auth flow sederhana, shared API client membantu mengurangi duplikasi header authorization
+
+Makna praktis untuk repo ini:
+
+- route login nanti bisa langsung memakai service `login()`
+- request route protected nanti bisa otomatis membawa bearer token bila helper token sudah terisi
+- helper token di `localStorage` adalah baseline yang praktis, walau nanti tetap bisa dievaluasi lagi dari sisi security dan UX
+
+Istilah penting:
+
+- `axios instance`
+- `request interceptor`
+- `bearer token`
+- `localStorage`

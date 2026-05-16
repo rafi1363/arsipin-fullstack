@@ -103,6 +103,7 @@ Operasional:
 - [ ] production deploy nyata
 - [ ] setup environment production
 - [ ] monitoring dan observability dasar
+- [x] helper lokal audit/merge batch PR untuk solo workflow
 
 ## Kontrak Backend Yang Sudah Stabil Untuk Frontend
 
@@ -154,6 +155,21 @@ Urutan kerja yang disarankan dari kondisi repo sekarang:
 - navigasi internal frontend sudah mulai memakai `next/link`, jadi fondasi SPA-style navigation sudah ada
 - untuk source of truth yang lebih operasional, gunakan `recap.md`
 - untuk keputusan belajar dan alasan engineering, gunakan `LEARNING_CENTER.md`
+
+## Update Workflow Lokal
+
+Tooling lokal kini juga mencakup script `.local-scripts/pr-batch-merge.sh`.
+
+Perannya:
+
+- audit semua PR open ke branch target
+- klasifikasikan status PR menjadi siap merge, pending, failed, blocked, draft, atau overlap risk
+- izinkan merge batch hanya untuk PR yang bersih dan sudah hijau
+- tetap meminta konfirmasi manual sebelum merge
+
+Status saat recap ini diperbarui:
+
+- script sudah berhasil dijalankan pada macOS dengan bash bawaan setelah dibuat kompatibel tanpa `declare -A` dan tanpa `mapfile`
 
 ## Catatan Arah Operasional Berikutnya
 

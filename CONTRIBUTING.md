@@ -61,6 +61,56 @@ Catatan:
 - helper ini bersifat lokal dan tidak wajib dipakai
 - review isi summary tetap disarankan sebelum PR benar-benar dibuat
 
+## Optional Batch Merge Helper
+
+Selain helper pembuatan PR, repo ini juga mendukung helper lokal untuk audit dan merge batch PR yang sudah hijau.
+
+Script:
+
+- `.local-scripts/pr-batch-merge.sh`
+
+Tujuan:
+
+- mengecek semua PR open ke branch target
+- memisahkan PR yang siap merge dari PR yang masih pending, failed, blocked, atau draft
+- menahan PR yang punya overlap file dengan PR siap merge lain
+- meminta konfirmasi eksplisit sebelum merge benar-benar dijalankan
+
+Cara pakai:
+
+```bash
+.local-scripts/pr-batch-merge.sh
+```
+
+Dry run eksplisit:
+
+```bash
+.local-scripts/pr-batch-merge.sh main --dry-run
+```
+
+Eksekusi merge untuk PR yang aman:
+
+```bash
+.local-scripts/pr-batch-merge.sh main --execute
+```
+
+Perilaku penting:
+
+- mode default adalah `--dry-run`
+- hanya PR dengan required checks hijau dan status merge bersih yang masuk kategori siap merge
+- PR dengan overlap file tidak di-merge batch dan hanya dilaporkan sebagai `OVERLAP RISK`
+- merge tetap meminta kata konfirmasi manual sebelum dijalankan
+- merge memakai strategi `--squash`
+
+Prasyarat:
+
+- `gh` harus terpasang dan valid login
+- jika auth `gh` invalid, login ulang dengan:
+
+```bash
+gh auth login -h github.com
+```
+
 ## Validasi Lokal
 
 Backend:

@@ -943,7 +943,7 @@ Istilah penting:
 Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 
 - Aturan approval bila nanti project mulai kolaboratif
-- GitHub Environments untuk `staging` dan `production`
+- `VERCEL_TOKEN` di GitHub Environments `staging` dan `production`
 - Secret scanning / push protection bila tersedia di paket GitHub yang dipakai
 
 ## Daftar Belajar Berikutnya
@@ -952,9 +952,8 @@ Beberapa hal tidak bisa disetel penuh hanya dari file di repo:
 - Menentukan desain upload file dan storage
 - Menambahkan status `expiring_soon` dan `expired`
 - Menambahkan automated tests
-- Menghubungkan workflow deploy ke target hosting final
-- Menentukan target host final untuk staging dan production
-- Belajar Docker untuk packaging aplikasi
+- Membuat database staging terpisah dari production
+- Belajar batasan Vercel Functions dibanding web service long-running
 - Belajar monitoring, logging, health check, dan backup
 
 ### 28. Saat backend dasar sudah cukup matang, prioritas sehat biasanya pindah ke integrasi frontend
@@ -1058,3 +1057,114 @@ Istilah penting:
 - `request interceptor`
 - `bearer token`
 - `localStorage`
+
+### 32. Backend Express bisa dideploy ke Vercel Functions, tetapi perlu menyesuaikan bentuk aplikasi
+
+Kondisi yang terjadi:
+
+- Railway trial sudah expired, jadi backend perlu target deploy lain yang tetap praktis untuk MVP belajar
+- frontend sudah memakai Vercel, sehingga opsi paling sederhana adalah membuat backend sebagai project Vercel terpisah
+
+Keputusan:
+
+- buat project Vercel backend bernama `arsipin-backend`
+- pisahkan Express app ke `backend/app.ts`
+- jadikan `backend/index.ts` sebagai entrypoint lokal
+- jadikan `backend/api/index.ts` sebagai entrypoint Vercel Function
+- tambahkan `backend/vercel.json` untuk route semua request ke function
+
+Pelajaran:
+
+- Express app untuk server tradisional biasanya memanggil `app.listen`
+- Vercel Function membutuhkan handler/app yang bisa di-export
+- karena itu app dan server listener perlu dipisahkan
+
+Istilah penting:
+
+- `serverless function`
+- `Vercel Function`
+- `entrypoint`
+- `app.listen`
+
+### 33. Native dependency sebaiknya dibuild di environment target
+
+Kasus yang terjadi:
+
+- backend sempat dideploy dengan `vercel build` lokal dari Windows lalu `vercel deploy --prebuilt`
+- runtime Vercel Linux gagal memuat `bcrypt`
+
+Error penting:
+
+```txt
+No native build was found for platform=linux arch=x64
+loaded from: /var/task/node_modules/bcrypt
+```
+
+Pelajaran:
+
+- dependency native seperti `bcrypt` punya binary yang tergantung OS dan arsitektur
+- artifact yang dibuild di Windows belum tentu cocok dijalankan di Linux
+- untuk backend ini, deploy dari source lebih aman daripada deploy prebuilt lokal
+
+Keputusan:
+
+- workflow frontend tetap memakai prebuilt artifact
+- workflow backend tidak memakai `--prebuilt`
+- Vercel dibiarkan install dan build backend langsung di Linux
+
+Istilah penting:
+
+- `native dependency`
+- `prebuilt artifact`
+- `runtime platform`
+
+### 34. Prisma Client harus tersedia saat build dan runtime
+
+Kasus yang terjadi:
+
+- build Vercel backend dari source sempat gagal karena Prisma Client belum di-generate
+- TypeScript melihat `@prisma/client` belum punya export yang diharapkan
+
+Solusi:
+
+- tambahkan script `postinstall` di `backend/package.json`:
+
+```json
+"postinstall": "prisma generate"
+```
+
+Pelajaran:
+
+- `prisma generate` bukan hanya langkah lokal
+- deployment environment juga perlu Prisma Client yang sesuai schema
+- `postinstall` membuat proses ini otomatis setiap dependency diinstall
+
+Istilah penting:
+
+- `Prisma Client`
+- `postinstall`
+- `generated client`
+
+### 35. Staging dan production perlu URL yang jelas berbeda
+
+Keputusan URL:
+
+- frontend production: `https://arsipin-fullstack.vercel.app`
+- frontend staging: `https://arsipin-fullstack-stg.vercel.app`
+- backend production: `https://arsipin-backend.vercel.app`
+- backend staging: `https://arsipin-backend-stg.vercel.app`
+
+Pelajaran:
+
+- nama domain staging yang eksplisit mengurangi risiko salah tes atau salah konfigurasi
+- frontend staging harus memakai backend staging
+- frontend production harus memakai backend production
+- CORS backend juga harus mengikuti frontend sesuai environment
+
+Istilah penting:
+
+- `alias`
+- `environment separation`
+- `CORS origin`
+- `staging`
+- `production`

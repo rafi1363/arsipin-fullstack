@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { prisma } from "../lib/prisma";
-import { authMiddleware } from "../middlewares/auth";
-import { protectedRouteLimiter } from "../middlewares/rate-limit";
+import { prisma } from "../lib/prisma.js";
+import { authMiddleware } from "../middlewares/auth.js";
+import { protectedRouteLimiter } from "../middlewares/rate-limit.js";
 import {
   isValidDateInput,
   normalizeString,
@@ -11,8 +11,8 @@ import {
   isValidSortOrder,
   toDate,
   type DocumentStatus,
-} from "../lib/validation";
-import { sendError } from "../lib/http";
+} from "../lib/validation.js";
+import { sendError } from "../lib/http.js";
 
 const documentsRouter = Router();
 

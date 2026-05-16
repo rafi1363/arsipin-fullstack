@@ -38,6 +38,12 @@ Yang belum tersedia:
 
 ## Backend Yang Sudah Bisa Dipakai Frontend
 
+Base URL aktif:
+
+- production: `https://arsipin-backend.vercel.app`
+- staging: `https://arsipin-backend-stg.vercel.app`
+- local development: `http://localhost:5000`
+
 Endpoint yang sudah siap dikonsumsi:
 
 - `POST /auth/register`
@@ -91,10 +97,42 @@ Minimal env:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
+
+Production env:
+
+```env
+NEXT_PUBLIC_API_URL=https://arsipin-backend.vercel.app
+NEXT_PUBLIC_APP_URL=https://arsipin-fullstack.vercel.app
+```
+
+Staging env:
+
+```env
+NEXT_PUBLIC_API_URL=https://arsipin-backend-stg.vercel.app
+NEXT_PUBLIC_APP_URL=https://arsipin-fullstack-stg.vercel.app
+```
+
+## Deployment
+
+Frontend sekarang dideploy ke Vercel project `arsipin-fullstack`.
+
+Workflow:
+
+- staging: `.github/workflows/deploy-staging.yml`
+- production: `.github/workflows/deploy-production.yml`
+
+Domain:
+
+- production: `https://arsipin-fullstack.vercel.app`
+- staging: `https://arsipin-fullstack-stg.vercel.app`
+
+Production workflow hanya boleh dijalankan setelah staging workflow sukses untuk commit yang sama.
 
 ## Notes
 
 - `src/app/page.tsx` sudah menjadi landing page minimalis awal, bukan template default lagi
 - route `/login` belum ada, jadi CTA login saat ini belum usable end-to-end
 - fokus implementasi berikutnya sebaiknya memakai kontrak backend yang sudah stabil terlebih dulu
+- detail deployment terbaru ada di `../DEPLOYMENT_HISTORY.md`

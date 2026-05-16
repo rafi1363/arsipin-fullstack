@@ -11,9 +11,10 @@ Use the example files instead:
 
 For production, store secrets in the deployment provider:
 
-- Vercel environment variables for the frontend.
-- Render, Railway, Fly.io, or similar provider environment variables for the backend.
+- Vercel environment variables for the frontend project `arsipin-fullstack`.
+- Vercel environment variables for the backend project `arsipin-backend`.
 - Neon dashboard for database credentials.
+- GitHub environment secrets for deployment automation.
 
 ## Baseline Security Checklist
 
@@ -44,9 +45,10 @@ As of `2026-05-16`, the repo already includes:
 
 Important limitations that still remain:
 
-- deploy workflows are still scaffold and not yet connected to final hosting
-- production CORS and runtime secrets still depend on the future hosting setup
+- `VERCEL_TOKEN` must still be created manually and stored in GitHub environments
+- staging and production currently may share the same Neon database unless a separate staging database is created
 - automated tests for security-sensitive flows are not implemented yet
+- file upload and object storage security are not implemented yet
 
 ## Frontend Auth Note
 

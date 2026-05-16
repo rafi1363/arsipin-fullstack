@@ -11,7 +11,7 @@ Status repo saat ini:
 - backend inti sudah cukup siap untuk MVP demo metadata dokumen
 - frontend sudah punya fondasi UI awal, tetapi auth flow dan halaman aplikasi utama belum jadi
 - pipeline engineering baseline sudah aktif dan cukup rapi untuk ukuran project belajar
-- deployment final masih belum dihubungkan ke provider hosting nyata
+- deployment frontend dan backend sudah aktif di Vercel untuk staging dan production
 
 ## Snapshot Implementasi
 
@@ -34,6 +34,11 @@ CI/CD dan security:
 - [x] required checks untuk merge ke `main`
 - [x] deploy scaffold untuk `staging`
 - [x] deploy scaffold untuk `production`
+- [x] deploy frontend staging nyata ke Vercel
+- [x] deploy frontend production nyata ke Vercel
+- [x] deploy backend staging nyata ke Vercel Functions
+- [x] deploy backend production nyata ke Vercel Functions
+- [x] alias staging/frontend/backend dengan suffix `-stg`
 
 Backend:
 
@@ -59,6 +64,9 @@ Backend:
 - [x] search/filter/sort list dokumen
 - [x] summary dashboard
 - [x] ownership check dokumen
+- [x] backend compatible dengan Vercel Functions via `backend/api/index.ts`
+- [x] split Express app ke `backend/app.ts` agar lokal dan Vercel bisa berbagi app yang sama
+- [x] Prisma Client auto-generate saat install lewat `postinstall`
 
 Frontend:
 
@@ -99,10 +107,13 @@ Frontend:
 
 Operasional:
 
-- [ ] staging deploy nyata
-- [ ] production deploy nyata
-- [ ] setup environment production
+- [x] staging deploy nyata
+- [x] production deploy nyata
+- [x] setup environment production untuk Vercel frontend/backend
+- [x] setup environment staging untuk Vercel frontend/backend
 - [ ] monitoring dan observability dasar
+- [ ] `VERCEL_TOKEN` perlu disimpan manual di GitHub environment `staging` dan `production`
+- [ ] database staging terpisah masih opsional dan belum dibuat
 - [x] helper lokal audit/merge batch PR untuk solo workflow
 
 ## Kontrak Backend Yang Sudah Stabil Untuk Frontend
@@ -153,7 +164,7 @@ Urutan kerja yang disarankan dari kondisi repo sekarang:
 - sistem dokumen saat ini masih menyimpan metadata, belum file upload
 - homepage frontend sudah berubah dari template default, tetapi route `/login` belum tersedia
 - navigasi internal frontend sudah mulai memakai `next/link`, jadi fondasi SPA-style navigation sudah ada
-- untuk source of truth yang lebih operasional, gunakan `recap.md`
+- untuk source of truth deployment terbaru, gunakan `DEPLOYMENT_HISTORY.md`
 - untuk keputusan belajar dan alasan engineering, gunakan `LEARNING_CENTER.md`
 
 ## Update Workflow Lokal
@@ -177,8 +188,21 @@ Keputusan arsitektur yang saat ini paling masuk akal untuk fase berikutnya:
 
 - database tetap `Neon PostgreSQL`
 - frontend sebaiknya diarahkan ke `Vercel`
-- backend sebaiknya diarahkan ke `Railway` atau `Render`
+- backend sekarang diarahkan ke `Vercel Functions` lewat project terpisah `arsipin-backend`
 - file dokumen asli nantinya disimpan di object storage, bukan langsung di database
+
+URL aktif:
+
+- frontend production: `https://arsipin-fullstack.vercel.app`
+- frontend staging: `https://arsipin-fullstack-stg.vercel.app`
+- backend production: `https://arsipin-backend.vercel.app`
+- backend staging: `https://arsipin-backend-stg.vercel.app`
+
+Catatan deploy:
+
+- Railway tidak lagi menjadi target utama karena trial akun sudah expired.
+- Backend Vercel tidak memakai prebuilt artifact lokal karena dependency native seperti `bcrypt` harus dibuild di environment Linux Vercel.
+- Production deploy workflow backend memverifikasi staging deployment untuk commit yang sama sebelum deploy production.
 
 Model data produk yang disarankan untuk fitur upload nanti:
 

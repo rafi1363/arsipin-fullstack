@@ -2,19 +2,19 @@ import bcrypt from "bcrypt";
 
 import { Router } from "express";
 
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
-import { generateToken } from "../lib/jwt";
+import { generateToken } from "../lib/jwt.js";
 import {
   authRateLimiter,
   protectedRouteLimiter,
-} from "../middlewares/rate-limit";
+} from "../middlewares/rate-limit.js";
 
-import { authMiddleware } from "../middlewares/auth";
+import { authMiddleware } from "../middlewares/auth.js";
 
-import { isValidEmail, normalizeString } from "../lib/validation";
+import { isValidEmail, normalizeString } from "../lib/validation.js";
 
-import { sendError } from "../lib/http";
+import { sendError } from "../lib/http.js";
 
 const authRouter = Router();
 

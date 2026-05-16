@@ -3,7 +3,7 @@
 Panduan ini untuk deploy repo monorepo Arsipin dengan layanan terpisah:
 
 - Frontend: Vercel
-- Backend API: Railway
+- Backend API: Vercel Functions
 - Database: Neon PostgreSQL
 - File storage nanti: Cloudflare R2
 
@@ -37,26 +37,24 @@ bun run prisma:generate
 bun run prisma:deploy
 ```
 
-## 2. Railway
+## 2. Backend API
 
-Railway dipakai untuk backend Express/Bun.
+Backend Express/Bun sekarang disiapkan sebagai project Vercel terpisah. Ini menggantikan Railway agar frontend dan backend bisa dikelola dari platform yang sama.
 
-Setup service:
+Project:
 
-- New Project
-- Deploy from GitHub repo
-- Pilih repo `arsipin-fullstack`
-- Set Root Directory: `backend`
-- Pastikan Railway memakai `backend/Dockerfile`
-- Generate public domain di tab Networking
+- Project name: `arsipin-backend`
+- Root directory lokal: `backend`
+- Production URL: `https://arsipin-backend.vercel.app`
+- Staging alias: `https://arsipin-backend-stg.vercel.app`
 
-Environment variables Railway:
+Environment variables backend:
 
 ```env
 DATABASE_URL="ambil dari Neon"
 JWT_SECRET="generate random minimal 32 bytes"
 PORT=5000
-CORS_ORIGIN="https://domain-frontend-vercel"
+CORS_ORIGIN="https://domain-frontend-vercel-sesuai-environment"
 STORAGE_PROVIDER="r2"
 S3_ENDPOINT="https://ACCOUNT_ID.r2.cloudflarestorage.com"
 S3_REGION="auto"
@@ -68,9 +66,18 @@ S3_PUBLIC_BASE_URL=""
 
 Command penting:
 
-- Start command cukup default dari Dockerfile: `bun run start`
+- Local start command: `bun run start`
+- Vercel production health check: `https://arsipin-backend.vercel.app/health`
+- Vercel staging health check: `https://arsipin-backend-stg.vercel.app/health`
 - Migrasi database jalankan manual saat schema berubah: `bun run prisma:deploy`
-- Health check URL: `https://domain-backend-railway/health`
+- Staging/preview Vercel bisa terkena Deployment Protection, jadi health check CI memakai `vercel curl`.
+
+Alternatif gratis jika backend perlu platform long-running non-serverless:
+
+- Koyeb: cocok untuk Docker/API kecil, free instance 512MB RAM, 0.1 vCPU, 2GB SSD.
+- Render: free web service tersedia, tetapi service idle bisa spin down setelah tidak ada trafik.
+
+Untuk Arsipin MVP, Vercel Functions dipilih karena Express didukung langsung, sudah satu ekosistem dengan frontend, dan tidak perlu Railway.
 
 ## 3. Vercel
 
@@ -87,16 +94,63 @@ Setup project:
 Environment variables Vercel:
 
 ```env
-NEXT_PUBLIC_API_URL="https://domain-backend-railway"
+NEXT_PUBLIC_API_URL="https://domain-backend-vercel"
 NEXT_PUBLIC_APP_URL="https://domain-frontend-vercel"
 ```
 
-Setelah backend Railway punya domain final:
+Environment yang disarankan:
 
-- Update `NEXT_PUBLIC_API_URL` di Vercel
-- Redeploy frontend
-- Update `CORS_ORIGIN` di Railway dengan domain Vercel
-- Redeploy backend
+- Production: gunakan domain normal, misalnya `https://arsipin-fullstack.vercel.app`
+- Preview/Staging: gunakan backend staging dan alias khusus, yaitu `https://arsipin-fullstack-stg.vercel.app`
+
+GitHub Actions deploy Vercel membutuhkan secret berikut di environment `staging` dan `production`:
+
+```env
+VERCEL_TOKEN="token dari Vercel Account Settings > Tokens"
+VERCEL_ORG_ID="orgId dari .vercel/project.json"
+VERCEL_PROJECT_ID="projectId dari .vercel/project.json"
+VERCEL_BACKEND_PROJECT_ID="projectId backend dari backend/.vercel/project.json"
+DATABASE_URL="connection string Neon"
+JWT_SECRET="secret JWT backend"
+CORS_ORIGIN="domain frontend sesuai environment"
+NEXT_PUBLIC_API_URL="domain backend sesuai environment"
+```
+
+Yang masih harus dibuat manual oleh pemilik repo:
+
+```powershell
+gh secret set VERCEL_TOKEN --env staging --body "TOKEN_ANDA"
+gh secret set VERCEL_TOKEN --env production --body "TOKEN_ANDA"
+```
+
+Tambahkan juga GitHub environment/repository variable untuk staging:
+
+```env
+VERCEL_STAGING_ALIAS="arsipin-fullstack-stg.vercel.app"
+VERCEL_BACKEND_STAGING_ALIAS="arsipin-backend-stg.vercel.app"
+```
+
+Nilai dari project lokal saat checklist ini dibuat:
+
+```env
+VERCEL_ORG_ID="team_rWj5d9rb0ggoVrf1EAISqSIj"
+VERCEL_PROJECT_ID="prj_eEmsx7oUJJCSdzrSprqtSRObEPWf"
+VERCEL_BACKEND_PROJECT_ID="prj_hkOXShZRqwTnEsumSGvaK4uJWnnU"
+```
+
+Domain final yang dipakai:
+
+```env
+# staging
+NEXT_PUBLIC_API_URL="https://arsipin-backend-stg.vercel.app"
+NEXT_PUBLIC_APP_URL="https://arsipin-fullstack-stg.vercel.app"
+CORS_ORIGIN="https://arsipin-fullstack-stg.vercel.app"
+
+# production
+NEXT_PUBLIC_API_URL="https://arsipin-backend.vercel.app"
+NEXT_PUBLIC_APP_URL="https://arsipin-fullstack.vercel.app"
+CORS_ORIGIN="https://arsipin-fullstack.vercel.app"
+```
 
 ## 4. Cloudflare R2
 
@@ -145,7 +199,10 @@ DATABASE_URL
 JWT_SECRET
 CORS_ORIGIN
 NEXT_PUBLIC_API_URL
-NEXT_PUBLIC_APP_URL
+VERCEL_TOKEN
+VERCEL_ORG_ID
+VERCEL_PROJECT_ID
+VERCEL_BACKEND_PROJECT_ID
 S3_ENDPOINT
 S3_REGION
 S3_BUCKET
@@ -158,11 +215,10 @@ S3_PUBLIC_BASE_URL
 
 1. Push repo ke GitHub.
 2. Buat Neon database dan ambil `DATABASE_URL`.
-3. Deploy backend ke Railway dengan root `backend`.
-4. Isi env Railway, sementara `CORS_ORIGIN` boleh pakai `http://localhost:3000` dulu.
-5. Jalankan migration ke Neon.
-6. Cek `https://domain-backend-railway/health`.
-7. Deploy frontend ke Vercel dengan root `frontend`.
-8. Isi `NEXT_PUBLIC_API_URL` memakai domain Railway.
-9. Update `CORS_ORIGIN` Railway memakai domain Vercel.
-10. Redeploy frontend dan backend.
+3. Isi GitHub environment secrets untuk `staging` dan `production`.
+4. Jalankan `Deploy Backend Staging`.
+5. Jalankan `Deploy Staging`.
+6. Jalankan `Deploy Backend Production`.
+7. Jalankan `Deploy Production`.
+8. Cek `https://arsipin-backend.vercel.app/health`.
+9. Cek `https://arsipin-fullstack.vercel.app`.

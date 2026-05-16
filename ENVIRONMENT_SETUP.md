@@ -152,29 +152,55 @@ Catatan: backend saat ini belum mengimplementasikan upload file. Variabel storag
 
 ## 7. Deployment Targets
 
-Rekomendasi awal:
+Target terbaru:
 
-- Frontend: Vercel, login dengan GitHub, import repo `rafi1363/arsipin-fullstack`, root directory `frontend`.
-- Backend: Railway atau Render, login dengan GitHub, import repo yang sama, root/service directory `backend`.
+- Frontend: Vercel project `arsipin-fullstack`.
+- Backend: Vercel project `arsipin-backend`, memakai Vercel Functions.
 - Database: Neon PostgreSQL.
 - File storage: Cloudflare R2.
 
-Environment production yang perlu diisi:
-
-Frontend:
+URL environment:
 
 ```env
-NEXT_PUBLIC_API_URL="https://backend-production-url"
-NEXT_PUBLIC_APP_URL="https://frontend-production-url"
+# production
+FRONTEND_URL="https://arsipin-fullstack.vercel.app"
+BACKEND_URL="https://arsipin-backend.vercel.app"
+
+# staging
+FRONTEND_URL="https://arsipin-fullstack-stg.vercel.app"
+BACKEND_URL="https://arsipin-backend-stg.vercel.app"
 ```
 
-Backend:
+Environment production frontend:
+
+```env
+NEXT_PUBLIC_API_URL="https://arsipin-backend.vercel.app"
+NEXT_PUBLIC_APP_URL="https://arsipin-fullstack.vercel.app"
+```
+
+Environment staging frontend:
+
+```env
+NEXT_PUBLIC_API_URL="https://arsipin-backend-stg.vercel.app"
+NEXT_PUBLIC_APP_URL="https://arsipin-fullstack-stg.vercel.app"
+```
+
+Environment production backend:
 
 ```env
 DATABASE_URL="..."
 JWT_SECRET="..."
 PORT=5000
-CORS_ORIGIN="https://frontend-production-url"
+CORS_ORIGIN="https://arsipin-fullstack.vercel.app"
+```
+
+Environment staging backend:
+
+```env
+DATABASE_URL="..."
+JWT_SECRET="..."
+PORT=5000
+CORS_ORIGIN="https://arsipin-fullstack-stg.vercel.app"
 ```
 
 Storage:
@@ -188,6 +214,37 @@ S3_ACCESS_KEY_ID="..."
 S3_SECRET_ACCESS_KEY="..."
 S3_PUBLIC_BASE_URL=""
 ```
+
+GitHub Actions deployment juga membutuhkan environment secrets:
+
+```env
+VERCEL_TOKEN="dibuat manual dari Vercel Dashboard"
+VERCEL_ORG_ID="team_rWj5d9rb0ggoVrf1EAISqSIj"
+VERCEL_PROJECT_ID="prj_eEmsx7oUJJCSdzrSprqtSRObEPWf"
+VERCEL_BACKEND_PROJECT_ID="prj_hkOXShZRqwTnEsumSGvaK4uJWnnU"
+```
+
+Variables untuk environment `staging`:
+
+```env
+VERCEL_STAGING_ALIAS="arsipin-fullstack-stg.vercel.app"
+VERCEL_BACKEND_STAGING_ALIAS="arsipin-backend-stg.vercel.app"
+```
+
+Yang harus dibuat manual oleh pemilik repo:
+
+1. Buat `VERCEL_TOKEN` dari Vercel Dashboard.
+2. Simpan token itu ke GitHub environment `staging`.
+3. Simpan token yang sama ke GitHub environment `production`.
+
+Command:
+
+```powershell
+gh secret set VERCEL_TOKEN --env staging --body "TOKEN_ANDA"
+gh secret set VERCEL_TOKEN --env production --body "TOKEN_ANDA"
+```
+
+Catatan: staging dan production saat ini masih bisa memakai database Neon yang sama untuk fase belajar. Jika ingin data staging terpisah, buat Neon branch/project staging lalu ganti `DATABASE_URL` pada GitHub environment `staging`.
 
 ## 8. Validation
 

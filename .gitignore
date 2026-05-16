@@ -51,3 +51,5 @@ coverage/
 
 # local-only helper scripts
 .local-scripts/
+.vercel
+.wrangler/

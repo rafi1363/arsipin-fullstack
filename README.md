@@ -40,6 +40,7 @@ Yang belum ada:
 - `frontend/`: Next.js App Router dengan fondasi UI awal, theme token, dan auth client helper
 - `PROJECT_RECAP.md`: rekap proyek yang lebih detail
 - `LEARNING_CENTER.md`: catatan belajar dan keputusan engineering
+- `ENVIRONMENT_SETUP.md`: panduan setup environment Windows, macOS/Linux, provider, dan secret
 - `CONTRIBUTING.md`: workflow branch dan PR
 - `SECURITY.md`: baseline keamanan project
 - `recap.md`: handoff recap operasional untuk konteks kerja terbaru
@@ -97,6 +98,8 @@ Isi env frontend minimal:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
+
+Untuk panduan environment lintas Windows dan macOS/Linux, lihat `ENVIRONMENT_SETUP.md`.
 
 ## Validasi Lokal
 

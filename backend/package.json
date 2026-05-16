@@ -33,6 +33,7 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "bunx prisma generate",
     "prisma:migrate": "bunx prisma migrate dev",
+    "prisma:deploy": "bunx prisma migrate deploy",
     "prisma:studio": "bunx prisma studio",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

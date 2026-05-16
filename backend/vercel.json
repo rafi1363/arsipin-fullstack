@@ -1,0 +1,16 @@
+{
+  "builds": [
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "buildCommand": "bun run prisma:generate",
+  "installCommand": "bun install --frozen-lockfile",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/index.ts"
+    }
+  ]
+}

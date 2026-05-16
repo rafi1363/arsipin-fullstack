@@ -30,6 +30,7 @@
   "scripts": {
     "dev": "bun --watch index.ts",
     "start": "bun index.ts",
+    "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "bunx prisma generate",
     "prisma:migrate": "bunx prisma migrate dev",

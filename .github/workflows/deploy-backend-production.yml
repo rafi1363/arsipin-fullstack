@@ -1,4 +1,4 @@
-name: Deploy Staging
+name: Deploy Backend Production
 
 on:
   workflow_dispatch:
@@ -14,8 +14,8 @@ permissions:
   checks: read
 
 concurrency:
-  group: staging-deploy
-  cancel-in-progress: true
+  group: backend-production-deploy
+  cancel-in-progress: false
 
 jobs:
   verify-checks:
@@ -62,11 +62,43 @@ jobs:
             echo "Check '$check' is successful"
           done
 
-  deploy:
-    name: Deploy to Staging
+  verify-backend-staging:
+    name: Verify Backend Staging Deployment
     runs-on: ubuntu-latest
     needs: verify-checks
-    environment: staging
+
+    steps:
+      - name: Verify backend staging already succeeded for this SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TARGET_SHA: ${{ needs.verify-checks.outputs.target_sha }}
+        run: |
+          response=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/$REPO/actions/workflows/deploy-backend-staging.yml/runs?event=workflow_dispatch&status=completed&per_page=50")
+
+          staging_run_id=$(echo "$response" | jq -r --arg sha "$TARGET_SHA" '
+            [.workflow_runs[]
+              | select(.head_sha == $sha and .conclusion == "success")]
+            | first
+            | .id // empty
+          ')
+
+          if [ -z "$staging_run_id" ]; then
+            echo "No successful Deploy Backend Staging run found for SHA $TARGET_SHA"
+            exit 1
+          fi
+
+          echo "Found successful backend staging deployment run: $staging_run_id"
+
+  deploy:
+    name: Deploy Backend to Production
+    runs-on: ubuntu-latest
+    needs:
+      - verify-checks
+      - verify-backend-staging
+    environment: production
     timeout-minutes: 15
 
     steps:
@@ -88,6 +120,12 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: bun run prisma:generate
 
+      - name: Deploy Prisma migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: bun run prisma:deploy
+
       - name: Typecheck backend
         working-directory: backend
         env:
@@ -97,31 +135,20 @@ jobs:
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
         run: bun run typecheck
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: bun install --frozen-lockfile
-
-      - name: Build frontend
-        working-directory: frontend
+      - name: Validate Vercel backend production configuration
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_APP_URL: https://${{ vars.VERCEL_STAGING_ALIAS }}
-        run: bun run build
-
-      - name: Validate Vercel staging configuration
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_APP_URL: https://${{ vars.VERCEL_STAGING_ALIAS }}
-          STAGING_ALIAS: ${{ vars.VERCEL_STAGING_ALIAS }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          VERCEL_BACKEND_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           missing=0
 
-          for name in NEXT_PUBLIC_API_URL NEXT_PUBLIC_APP_URL STAGING_ALIAS VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN; do
+          for name in CORS_ORIGIN DATABASE_URL JWT_SECRET VERCEL_BACKEND_PROJECT_ID VERCEL_ORG_ID VERCEL_TOKEN; do
             if [ -z "${!name}" ]; then
-              echo "$name is required for staging deployment"
+              echo "$name is required for backend production deployment"
               missing=1
             fi
           done
@@ -133,39 +160,37 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel preview environment
+      - name: Pull Vercel production environment
+        working-directory: backend
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token="${{ secrets.VERCEL_TOKEN }}"
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
 
-      - name: Build Vercel preview artifact
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_APP_URL: https://${{ vars.VERCEL_STAGING_ALIAS }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel build --token="${{ secrets.VERCEL_TOKEN }}"
-
-      - name: Deploy staging to Vercel
+      - name: Deploy backend production to Vercel
         id: vercel-deploy
+        working-directory: backend
         env:
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
         run: |
-          deployment_json=$(vercel deploy --prebuilt --format json --token="${{ secrets.VERCEL_TOKEN }}")
+          deployment_json=$(vercel deploy \
+            --yes \
+            --prod \
+            --format json \
+            --env DATABASE_URL="$DATABASE_URL" \
+            --env JWT_SECRET="$JWT_SECRET" \
+            --env PORT="5000" \
+            --env CORS_ORIGIN="$CORS_ORIGIN" \
+            --token="${{ secrets.VERCEL_TOKEN }}")
+
           deployment_url=$(echo "$deployment_json" | jq -r ".deployment.url")
           echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
-          echo "Staging deployment: $deployment_url"
+          echo "Backend production deployment: $deployment_url"
+          echo "Backend production alias: https://arsipin-backend.vercel.app"
 
-      - name: Assign staging alias
-        env:
-          STAGING_ALIAS: ${{ vars.VERCEL_STAGING_ALIAS }}
-        run: |
-          if [ -z "$STAGING_ALIAS" ]; then
-            echo "Repository/environment variable VERCEL_STAGING_ALIAS is required, for example arsipin-fullstack-stg.vercel.app"
-            exit 1
-          fi
-
-          vercel alias set "${{ steps.vercel-deploy.outputs.deployment_url }}" "$STAGING_ALIAS" --token="${{ secrets.VERCEL_TOKEN }}"
-          echo "Staging alias: https://$STAGING_ALIAS"
+      - name: Verify backend production health
+        run: curl --fail --show-error --silent "https://arsipin-backend.vercel.app/health"

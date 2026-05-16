@@ -258,6 +258,60 @@ Istilah penting:
 
 ### 11. Prisma 7 membutuhkan driver adapter saat runtime
 
+### 12. Pisahkan metadata dokumen dan file biner
+
+Keputusan yang disarankan:
+
+- PostgreSQL dipakai untuk metadata dokumen
+- object storage dipakai untuk file dokumen asli
+
+Kenapa ini sehat:
+
+- database relasional lebih cocok untuk query, filter, relasi, dan summary
+- file biner akan membuat database cepat membesar jika dipaksa disimpan langsung di sana
+- object storage lebih natural untuk upload, download, dan lifecycle file
+
+Implikasi desain untuk Arsipin:
+
+- endpoint dokumen yang sekarang tetap menjadi sumber metadata utama
+- nanti upload file bisa ditambahkan sebagai field referensi file, bukan isi file di kolom database
+- tabel dokumen minimal perlu tahu `storageKey`, `fileName`, `mimeType`, dan `fileSize` saat fitur upload masuk
+
+Istilah penting:
+
+- `object storage`
+- `blob`
+- `metadata`
+- `storage key`
+
+### 13. Pilih hosting berdasarkan kompleksitas belajar, bukan gengsi stack
+
+Pelajaran:
+
+- frontend Next.js paling praktis mulai dari `Vercel`
+- backend Express kecil lebih nyaman dipindahkan ke `Railway` atau `Render`
+- `Neon` sudah cukup cocok dipertahankan untuk PostgreSQL
+
+Tradeoff yang perlu diingat:
+
+- `Vercel` sangat enak untuk frontend, tetapi bukan berarti backend Express harus ikut dipaksa di sana
+- `Railway` biasanya enak untuk DX dan deploy service kecil
+- `Render` cukup sederhana untuk service web tradisional, tetapi tier rendah bisa punya cold start
+- `Fly.io` menarik untuk belajar infra lebih dalam, tetapi setup dan operasionalnya lebih teknis
+
+Prinsip keputusan:
+
+- pilih stack yang membuat loop belajar cepat
+- hindari terlalu banyak provider jika belum ada alasan produk yang kuat
+- untuk MVP belajar, kesederhanaan operasional lebih bernilai daripada optimasi dini
+
+Istilah penting:
+
+- `developer experience`
+- `cold start`
+- `operational complexity`
+- `premature optimization`
+
 Masalah yang terjadi:
 
 - `bun run dev` gagal saat membuat `PrismaClient`

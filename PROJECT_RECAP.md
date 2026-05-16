@@ -154,3 +154,18 @@ Urutan kerja yang disarankan dari kondisi repo sekarang:
 - navigasi internal frontend sudah mulai memakai `next/link`, jadi fondasi SPA-style navigation sudah ada
 - untuk source of truth yang lebih operasional, gunakan `recap.md`
 - untuk keputusan belajar dan alasan engineering, gunakan `LEARNING_CENTER.md`
+
+## Catatan Arah Operasional Berikutnya
+
+Keputusan arsitektur yang saat ini paling masuk akal untuk fase berikutnya:
+
+- database tetap `Neon PostgreSQL`
+- frontend sebaiknya diarahkan ke `Vercel`
+- backend sebaiknya diarahkan ke `Railway` atau `Render`
+- file dokumen asli nantinya disimpan di object storage, bukan langsung di database
+
+Model data produk yang disarankan untuk fitur upload nanti:
+
+- database menyimpan metadata dokumen
+- object storage menyimpan file asli
+- tabel dokumen atau tabel file turunan menyimpan referensi key/path file, mime type, ukuran, dan waktu upload

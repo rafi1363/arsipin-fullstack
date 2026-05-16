@@ -25,6 +25,8 @@ For production, store secrets in the deployment provider:
 - Use HTTPS for all deployed frontend and backend traffic.
 - Keep dependency updates visible with Dependabot.
 - Review GitHub secret scanning alerts if GitHub reports one.
+- Remember that `.gitignore` is not a security boundary; ignored files stay local, but they are not protected if the machine or workspace is compromised.
+- Review local helper scripts before running them, and never store real secrets inside convenience scripts.
 
 ## Reporting
 

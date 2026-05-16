@@ -338,6 +338,37 @@ Istilah penting:
 - `summary endpoint`
 - `route order`
 - `dashboard contract`
+
+### 14. PR template bisa dibantu otomatis, tetapi bukan dengan template statis saja
+
+Kasus yang terjadi:
+
+- ada kebutuhan agar bagian `Summary` pada pull request tidak diisi manual setiap kali
+- template PR GitHub dipakai sebagai struktur, tetapi ia sendiri tidak membaca diff secara dinamis
+
+Keputusan:
+
+- placeholder `<!-- AUTO_SUMMARY -->` dipasang di template PR
+- helper lokal di `.local-scripts/` dipakai untuk membaca commit message dan changed files lalu membuat body PR lewat `gh pr create`
+
+Kenapa pendekatan ini dipilih:
+
+- workflow tetap ringan dan cocok untuk repo belajar
+- struktur PR tetap seragam
+- summary bisa dibuat otomatis tanpa perlu menambah GitHub Action yang lebih kompleks
+
+Pelajaran:
+
+- template GitHub itu statis; dinamika isi biasanya datang dari script atau tooling di sekelilingnya
+- `gitignore` membantu menjaga helper tetap lokal, tetapi bukan mekanisme keamanan
+- script lokal yang nyaman tetap perlu dibaca dan dipahami sebelum dijalankan
+
+Istilah penting:
+
+- `PR template`
+- `gh pr create`
+- `local automation`
+- `gitignore is not a security boundary`
 - membaca error runtime dengan tenang sering kali menunjukkan perubahan konsep library, bukan sekadar typo
 
 Istilah penting:

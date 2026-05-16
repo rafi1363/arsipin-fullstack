@@ -1,6 +1,6 @@
 # Arsipin Frontend
 
-Frontend Arsipin saat ini masih berada di tahap starter Next.js dan belum merepresentasikan UI produk final.
+Frontend Arsipin saat ini masih berada di tahap starter Next.js dan belum merepresentasikan UI produk final, tetapi kontrak backend inti sudah cukup stabil untuk mulai membangun MVP UI.
 
 ## Status Saat Ini
 
@@ -15,9 +15,10 @@ Yang sudah tersedia:
 Yang belum tersedia:
 
 - UI login/register Arsipin
-- integrasi ke backend auth
-- dashboard dokumen
-- halaman manajemen dokumen
+- dashboard summary Arsipin
+- list/manajemen dokumen
+- search/filter/sort dokumen di UI
+- integrasi ke backend auth dan documents
 - reminder expiry
 
 ## Getting Started
@@ -50,4 +51,4 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 ## Notes
 
 - halaman utama masih template awal Next.js
-- frontend sengaja belum diperdalam sebelum kontrak backend document lebih stabil
+- backend sekarang sudah menyediakan auth, CRUD dokumen, list filter, dan summary dashboard untuk menopang pengerjaan frontend berikutnya

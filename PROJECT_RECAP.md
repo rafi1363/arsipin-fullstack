@@ -8,7 +8,7 @@ Arsipin adalah project belajar fullstack untuk aplikasi manajemen arsip dan doku
 
 Kondisi repo saat ini:
 
-- Backend dasar sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, endpoint document CRUD metadata, list endpoint dengan search, status filter, dan sorting, serta dashboard summary endpoint untuk kebutuhan demo.
+- Backend inti untuk MVP demo sudah berjalan dengan Express, Prisma, auth JWT dasar, reusable rate limiting, endpoint document CRUD metadata, list endpoint dengan search, status filter, dan sorting, serta dashboard summary endpoint.
 - Frontend masih berada di tahap template Next.js awal, belum masuk ke UI produk Arsipin.
 - Pipeline GitHub untuk CI, security baseline, dan branch workflow dasar sudah ada dan validasi utama sudah bisa dijalankan.
 - Proteksi branch `main` sudah terverifikasi menolak direct push dan memaksa alur branch plus pull request.
@@ -103,6 +103,11 @@ Catatan:
 - [x] Expiry tracking dasar berbasis status response
 - [x] Dashboard summary endpoint
 - [ ] Validasi input document yang lebih kuat
+
+Catatan milestone:
+
+- dari sisi fondasi API untuk demo, backend sudah cukup siap untuk menopang pengerjaan frontend
+- pekerjaan backend berikutnya lebih banyak bersifat enhancement, automated tests, dan keputusan produk lanjutan
 
 ### Frontend
 
@@ -242,6 +247,7 @@ Catatan:
 - workflow `CI`, `CodeQL`, dan `Security` sekarang memakai concurrency agar run lama pada branch/PR yang sama dibatalkan saat ada push baru
 - job `Backend` sekarang juga menjalankan `bun run format:check`
 - workflow deploy staging dan production sudah ada, tetapi masih bersifat scaffold dan belum terhubung ke provider deployment
+- tersedia juga helper lokal untuk membuat PR dengan summary otomatis melalui `.local-scripts/pr-create.sh`; helper ini sengaja tidak di-track Git
 
 ### Status Proteksi Branch `main`
 
@@ -311,7 +317,7 @@ Hasil:
 
 Urutan yang paling masuk akal dari kondisi sekarang:
 
-1. Bangun UI frontend Arsipin setelah kontrak backend document cukup stabil.
+1. Bangun UI frontend Arsipin dengan login, dashboard summary, dan list dokumen.
 2. Tambahkan automated tests.
 3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
 4. Hubungkan workflow deploy ke provider hosting final.

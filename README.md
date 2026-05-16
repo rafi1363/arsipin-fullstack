@@ -4,7 +4,7 @@ Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen.
 
 ## Current State
 
-- Backend sudah memiliki fondasi API yang nyata dengan auth JWT, protected routes, rate limiting, document metadata CRUD, list endpoint dengan search, status filter, dan sorting, serta dashboard summary endpoint untuk kebutuhan demo.
+- Backend sekarang sudah cukup matang untuk MVP demo: auth JWT, protected routes, rate limiting, document metadata CRUD, list endpoint dengan search, status filter, sorting, dan dashboard summary endpoint.
 - Frontend masih berada di tahap starter `Next.js` dan belum merepresentasikan UI produk Arsipin.
 - Pipeline engineering baseline sudah aktif: CI, backend format check, CodeQL, Gitleaks, Trivy, Dependabot, dan workflow deploy manual untuk `staging` serta `production`.
 - Deploy nyata ke provider hosting belum dihubungkan; workflow deploy saat ini masih berupa scaffold dengan guardrail yang sudah disiapkan.
@@ -21,6 +21,7 @@ Documents:
 
 - `POST /documents`
 - `GET /documents`
+- `GET /documents/summary`
 - `GET /documents/:id`
 - `PUT /documents/:id`
 - `DELETE /documents/:id`
@@ -120,6 +121,6 @@ Pipeline notes:
 ## Recommended Next Steps
 
 1. Mulai bangun UI frontend Arsipin dengan login, dashboard summary, dan list dokumen.
-2. Tambahkan automated tests sebelum menghubungkan deploy ke host final.
+2. Tambahkan automated tests untuk auth, ownership, list filter, dan summary.
 3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
 4. Hubungkan workflow deploy ke provider hosting final.

@@ -152,3 +152,50 @@ Urutan yang paling masuk akal dari kondisi repo sekarang:
 6. tambah automated tests backend
 7. putuskan desain upload file dan storage provider
 8. hubungkan deploy workflow ke target hosting final
+
+## Pola Kolaborasi Implementasi
+
+Mulai fase kerja ini, pola kolaborasi yang dipakai di repo adalah:
+
+- AI boleh membaca repo, menganalisis progress, memberi instruksi kerja, dan mengedit dokumentasi
+- implementasi aplikasi, pembuatan file fitur, pengetikan kode, commit, dan PR dikerjakan manual oleh pemilik repo
+- contoh kode dari AI dipakai sebagai panduan belajar dan referensi implementasi, bukan perubahan langsung ke source app
+- jika ada perubahan besar yang mengubah arah kerja, sinkronkan kembali ke `PROJECT_RECAP.md`, `LEARNING_CENTER.md`, dan `recap.md`
+
+## Rekomendasi Hosting Dan Penyimpanan File
+
+Untuk fase belajar yang tetap realistis secara operasional, stack yang paling seimbang saat ini:
+
+- frontend: `Vercel`
+- backend API: `Railway` atau `Render`
+- database PostgreSQL: `Neon`
+- file dokumen asli: object storage seperti `Cloudflare R2`, `AWS S3`, atau `Supabase Storage`
+
+Prinsip penting:
+
+- jangan simpan file dokumen biner langsung di PostgreSQL untuk kebutuhan utama aplikasi
+- simpan metadata dokumen di database
+- simpan file asli di object storage
+- simpan URL/path, provider key, mime type, dan ukuran file di tabel database
+
+Jika ingin jalur yang paling sederhana untuk MVP belajar:
+
+1. tetap pakai `Neon` untuk database
+2. deploy frontend ke `Vercel`
+3. deploy backend ke `Railway`
+4. pakai `Cloudflare R2` untuk file upload karena biaya egress biasanya lebih ramah
+
+Jika prioritas utama adalah kemudahan setup penuh:
+
+1. frontend ke `Vercel`
+2. backend ke `Render`
+3. database tetap `Neon`
+4. file ke `Supabase Storage`
+
+Tradeoff singkat:
+
+- `Railway`: DX enak dan cepat untuk project belajar, tetapi perlu cek biaya/runtime limit terbaru saat nanti serius dipakai
+- `Render`: setup cukup mudah dan stabil, tetapi cold start bisa terasa pada tier rendah
+- `Fly.io`: fleksibel dan menarik untuk belajar infra, tetapi setup lebih teknis dibanding `Railway` atau `Render`
+- `Cloudflare R2`: bagus untuk penyimpanan file karena object storage memang cocok untuk arsip
+- `Supabase Storage`: onboarding mudah, tetapi berarti storage ada di platform berbeda dari backend utama jika backend tetap bukan di Supabase

@@ -4,7 +4,7 @@ Frontend Arsipin menggunakan `Next.js 16`, `React 19`, `TypeScript`, dan `Tailwi
 
 ## Status Saat Ini
 
-Frontend saat ini masih starter project dan belum merepresentasikan UI produk final.
+Frontend saat ini sudah memiliki fondasi UI awal, tetapi belum masuk ke flow auth dan halaman aplikasi utama yang benar-benar bisa dipakai.
 
 Yang sudah tersedia:
 
@@ -13,9 +13,20 @@ Yang sudah tersedia:
 - Tailwind CSS
 - ESLint
 - metadata dasar project
+- landing page minimalis yang lebih responsive
+- theme token dasar untuk light dan dark mode
+- reusable component dasar:
+  - `Button`
+  - `Card`
+  - `Container`
+  - `Badge`
+- shared API client dengan `axios`
+- auth token helper berbasis `localStorage`
+- auth API helper dasar untuk `login` dan `getMe`
 
 Yang belum tersedia:
 
+- route `/login`
 - UI login/register
 - dashboard summary Arsipin
 - list dokumen
@@ -23,6 +34,7 @@ Yang belum tersedia:
 - search/filter/sort di UI
 - integrasi auth ke backend
 - proteksi route frontend
+- toggle dark mode manual
 
 ## Backend Yang Sudah Bisa Dipakai Frontend
 
@@ -47,12 +59,14 @@ Query yang sudah tersedia pada list dokumen:
 
 ## Urutan Implementasi Frontend Yang Disarankan
 
-1. buat util API client dan auth contract
+1. buat route `/login`
 2. bangun halaman login
-3. bangun dashboard summary
-4. bangun halaman list dokumen
-5. tambahkan form create dan edit dokumen
-6. tambahkan proteksi route dan session handling
+3. sambungkan submit login ke backend lewat `axios`
+4. simpan token dan sambungkan `getMe`
+5. bangun dashboard summary
+6. bangun halaman list dokumen
+7. tambahkan form create dan edit dokumen
+8. tambahkan proteksi route dan session handling
 
 ## Getting Started
 
@@ -81,5 +95,6 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 ## Notes
 
-- `src/app/page.tsx` masih template bawaan Next.js
+- `src/app/page.tsx` sudah menjadi landing page minimalis awal, bukan template default lagi
+- route `/login` belum ada, jadi CTA login saat ini belum usable end-to-end
 - fokus implementasi berikutnya sebaiknya memakai kontrak backend yang sudah stabil terlebih dulu

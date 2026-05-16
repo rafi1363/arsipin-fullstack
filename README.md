@@ -1,15 +1,15 @@
 # Arsipin Fullstack
 
-Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen. Repo ini sudah punya fondasi backend yang cukup siap untuk MVP demo, sementara frontend masih berada di tahap starter dan menjadi area implementasi utama berikutnya.
+Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen. Repo ini sudah punya fondasi backend yang cukup siap untuk MVP demo, sementara frontend sekarang sudah mulai bergerak dari starter menuju fondasi UI produk yang reusable.
 
 ## Snapshot Repo
 
 Tanggal snapshot: `2026-05-16`
 
-- Branch aktif lokal: `main`
-- HEAD lokal: `ca01b85`
+- Branch aktif lokal saat dokumentasi terakhir disinkronkan: `main`
+- HEAD saat recap frontend terakhir: `ca01b85`
 - Backend sudah menyediakan auth JWT, protected routes, rate limiting, document metadata CRUD, search/filter/sort, dan dashboard summary.
-- Frontend masih template default `Next.js` dan belum terhubung ke backend.
+- Frontend sudah memiliki landing page minimalis, theme token dasar light/dark, reusable UI component dasar, dan util auth client berbasis `axios`.
 - Workflow engineering baseline sudah aktif: CI, format check backend, CodeQL, Gitleaks, Trivy, Dependabot, dan deploy scaffold manual untuk `staging` serta `production`.
 
 ## Kondisi Produk Saat Ini
@@ -27,8 +27,8 @@ Yang sudah ada:
 
 Yang belum ada:
 
-- UI produk Arsipin
-- integrasi frontend ke backend
+- halaman login yang benar-benar aktif
+- integrasi auth frontend end-to-end
 - upload file arsip asli
 - reminder expiry
 - automated tests
@@ -37,7 +37,7 @@ Yang belum ada:
 ## Struktur Repo
 
 - `backend/`: Express, Prisma, auth, dan documents API
-- `frontend/`: Next.js App Router starter
+- `frontend/`: Next.js App Router dengan fondasi UI awal, theme token, dan auth client helper
 - `PROJECT_RECAP.md`: rekap proyek yang lebih detail
 - `LEARNING_CENTER.md`: catatan belajar dan keputusan engineering
 - `CONTRIBUTING.md`: workflow branch dan PR
@@ -92,6 +92,12 @@ cp .env.example .env.local
 bun run dev
 ```
 
+Isi env frontend minimal:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
 ## Validasi Lokal
 
 Backend:
@@ -138,10 +144,11 @@ Keduanya masih scaffold dan belum menjalankan deploy nyata ke provider final.
 
 Urutan yang paling masuk akal dari kondisi repo sekarang:
 
-1. bangun UI auth frontend
-2. bangun dashboard summary frontend
-3. bangun halaman list/detail/manage dokumen
-4. sambungkan state auth frontend ke backend
-5. tambah automated tests backend
-6. putuskan desain upload file dan storage provider
-7. hubungkan deploy workflow ke target hosting final
+1. buat route `/login` dan form login yang benar-benar aktif
+2. sambungkan submit login ke `POST /auth/login` lewat `axios`
+3. simpan token dan sambungkan `getMe()` untuk status auth awal
+4. bangun dashboard summary frontend
+5. bangun halaman list/detail/manage dokumen
+6. tambah automated tests backend
+7. putuskan desain upload file dan storage provider
+8. hubungkan deploy workflow ke target hosting final

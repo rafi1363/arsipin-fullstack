@@ -47,3 +47,13 @@ Important limitations that still remain:
 - deploy workflows are still scaffold and not yet connected to final hosting
 - production CORS and runtime secrets still depend on the future hosting setup
 - automated tests for security-sensitive flows are not implemented yet
+
+## Frontend Auth Note
+
+Frontend currently has an early token helper that uses browser `localStorage` as a practical starting point for the upcoming login flow.
+
+Keep in mind:
+
+- this is acceptable for an early learning-stage MVP, but it is not the strongest option for long-term auth hardening
+- if the app later handles more sensitive use cases, the auth storage approach should be reviewed again
+- do not treat the presence of a token helper as a completed auth security design

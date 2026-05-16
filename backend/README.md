@@ -1,8 +1,10 @@
 # Arsipin Backend
 
-Backend Arsipin dibangun dengan Bun, Express, TypeScript, Prisma 7, dan Neon PostgreSQL.
+Backend Arsipin dibangun dengan `Bun`, `Express 5`, `TypeScript`, `Prisma 7`, dan `Neon PostgreSQL`.
 
 ## Status Saat Ini
+
+Backend saat ini sudah cukup siap untuk menopang MVP demo metadata dokumen.
 
 Yang sudah tersedia:
 
@@ -13,34 +15,53 @@ Yang sudah tersedia:
 - `GET /auth/me`
 - `POST /documents`
 - `GET /documents`
+- `GET /documents/summary`
 - `GET /documents/:id`
 - `PUT /documents/:id`
 - `DELETE /documents/:id`
+
+Fondasi implementasi yang sudah ada:
+
 - JWT helper reusable
-- shared input validation helper
-- shared HTTP error response helper
 - auth middleware
-- rate limiting dasar untuk route auth dan route protected
-- search dokumen via query `search`
-- filter status dokumen via query `status`
-- sorting dokumen via query `sortBy` dan `sortOrder`
-- dashboard summary endpoint `GET /documents/summary`
+- reusable rate limiter
+- shared validation helper
+- shared HTTP error response helper
+- ownership check dokumen berdasarkan `id + userId`
 
 Yang belum tersedia:
 
+- upload file arsip
+- storage integration
 - reminder expiry
-- upload file arsip asli
+- automated tests
+- pagination dokumen
 
-Catatan:
+## Perilaku API Penting
 
-- Workflow deployment staging dan production sudah mulai disiapkan di `.github/workflows/`, tetapi backend belum dihubungkan ke target hosting final.
-- Untuk saat ini backend sudah cukup siap untuk menopang MVP demo, sementara fokus berikutnya bergeser ke frontend dan automated tests.
-- route auth sekarang memvalidasi required fields, format email, dan minimum password length
-- route documents sekarang memvalidasi title dan format `expiredDate` sebelum write ke database
-- route `GET /documents` sekarang mendukung search, status filter, dan sorting
-- status `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` pada response list dokumen
-- route `GET /documents/summary` sekarang menyediakan total dokumen, breakdown status expiry, dan nearest expiry
-- error response backend mulai dirapikan lewat helper `backend/lib/http.ts`
+Auth:
+
+- register memvalidasi `name`, `email`, dan `password`
+- login memvalidasi `email` dan `password`
+- minimum password length saat ini `8`
+- validasi email memakai pendekatan non-regex sederhana
+
+Documents:
+
+- create mewajibkan `title` dan `expiredDate`
+- update menerima `title`, `description`, dan/atau `expiredDate`
+- `GET /documents` mendukung:
+  - `search`
+  - `status`
+  - `sortBy`
+  - `sortOrder`
+- `sortBy` valid: `createdAt`, `expiredDate`, `title`
+- `sortOrder` valid: `asc`, `desc`
+- status response list:
+  - `active`
+  - `expiring_soon`
+  - `expired`
+- `GET /documents/summary` menyediakan total dokumen, breakdown status, dan `nearestExpiry`
 
 ## Setup
 
@@ -78,6 +99,6 @@ CORS_ORIGIN=http://localhost:3000
 ## Notes
 
 - Prisma runtime memakai `@prisma/adapter-pg`
-- document saat ini masih berupa metadata di database
-- file upload/storage belum diterapkan
-- validasi email saat ini memakai pendekatan non-regex sederhana agar tidak memicu alert CodeQL tentang regex performance risk
+- document saat ini masih metadata-only
+- deploy workflow backend belum terhubung ke hosting final
+- source of truth progres backend yang lebih luas ada di `../PROJECT_RECAP.md` dan `../recap.md`

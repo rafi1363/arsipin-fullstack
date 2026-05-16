@@ -399,8 +399,19 @@ Completed:
 - Migration successful
 - Initial API setup completed
 
-Next milestone:
+Next milestone at the time this document was first written:
 
 - Authentication system implementation
 - Full CRUD document system
 - Frontend dashboard integration
+
+## Historical Note
+
+That milestone list above is now mostly completed.
+
+Current repo state on `2026-05-16`:
+
+- authentication is already implemented
+- full metadata CRUD document system is already implemented
+- search, filter, sorting, and dashboard summary endpoint are already implemented
+- the main unfinished area has shifted to frontend product UI, automated tests, file upload/storage design, and real deployment integration

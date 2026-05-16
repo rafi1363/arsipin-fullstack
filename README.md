@@ -1,15 +1,50 @@
 # Arsipin Fullstack
 
-Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen.
+Arsipin adalah project belajar fullstack untuk manajemen arsip dan dokumen. Repo ini sudah punya fondasi backend yang cukup siap untuk MVP demo, sementara frontend masih berada di tahap starter dan menjadi area implementasi utama berikutnya.
 
-## Current State
+## Snapshot Repo
 
-- Backend sekarang sudah cukup matang untuk MVP demo: auth JWT, protected routes, rate limiting, document metadata CRUD, list endpoint dengan search, status filter, sorting, dan dashboard summary endpoint.
-- Frontend masih berada di tahap starter `Next.js` dan belum merepresentasikan UI produk Arsipin.
-- Pipeline engineering baseline sudah aktif: CI, backend format check, CodeQL, Gitleaks, Trivy, Dependabot, dan workflow deploy manual untuk `staging` serta `production`.
-- Deploy nyata ke provider hosting belum dihubungkan; workflow deploy saat ini masih berupa scaffold dengan guardrail yang sudah disiapkan.
+Tanggal snapshot: `2026-05-16`
 
-## Backend Features Today
+- Branch aktif lokal: `main`
+- HEAD lokal: `ca01b85`
+- Backend sudah menyediakan auth JWT, protected routes, rate limiting, document metadata CRUD, search/filter/sort, dan dashboard summary.
+- Frontend masih template default `Next.js` dan belum terhubung ke backend.
+- Workflow engineering baseline sudah aktif: CI, format check backend, CodeQL, Gitleaks, Trivy, Dependabot, dan deploy scaffold manual untuk `staging` serta `production`.
+
+## Kondisi Produk Saat Ini
+
+Yang sudah ada:
+
+- registrasi user
+- login user
+- endpoint cek user login
+- CRUD metadata dokumen
+- search dokumen
+- filter status dokumen
+- sorting dokumen
+- summary dashboard untuk total dokumen dan nearest expiry
+
+Yang belum ada:
+
+- UI produk Arsipin
+- integrasi frontend ke backend
+- upload file arsip asli
+- reminder expiry
+- automated tests
+- deployment nyata ke provider hosting final
+
+## Struktur Repo
+
+- `backend/`: Express, Prisma, auth, dan documents API
+- `frontend/`: Next.js App Router starter
+- `PROJECT_RECAP.md`: rekap proyek yang lebih detail
+- `LEARNING_CENTER.md`: catatan belajar dan keputusan engineering
+- `CONTRIBUTING.md`: workflow branch dan PR
+- `SECURITY.md`: baseline keamanan project
+- `recap.md`: handoff recap operasional untuk konteks kerja terbaru
+
+## Backend API Yang Sudah Aktif
 
 Auth:
 
@@ -26,30 +61,15 @@ Documents:
 - `PUT /documents/:id`
 - `DELETE /documents/:id`
 
-Catatan implementasi:
+Catatan implementasi penting:
 
+- auth dan documents route sudah memakai rate limiter
 - JWT helper dipusatkan di `backend/lib/jwt.ts`
-- validasi input dasar dipusatkan di `backend/lib/validation.ts`
-- error response dasar dipusatkan di `backend/lib/http.ts`
-- route protected memakai limiter sebelum auth middleware
-- auth memvalidasi required fields, format email, dan minimum password length
-- document create dan update memvalidasi title serta format `expiredDate`
-- `GET /documents` mendukung `search`, `status`, `sortBy`, dan `sortOrder`
-- status dokumen `active`, `expiring_soon`, dan `expired` saat ini dihitung dari `expiredDate` di response list endpoint
-- `GET /documents/summary` menyediakan ringkasan total dokumen, status expiry, dan nearest expiry
+- validasi dasar dipusatkan di `backend/lib/validation.ts`
+- helper error response dipusatkan di `backend/lib/http.ts`
 - akses dokumen tunggal dibatasi dengan ownership check `id + userId`
-- sistem dokumen saat ini masih menyimpan metadata, belum file upload/storage
-
-## Repo Map
-
-- `backend/`: Express, Prisma, auth, dan document API
-- `frontend/`: Next.js App Router starter
-- `.github/workflows/`: CI, security scans, CodeQL, dan deploy scaffold
-- `PROJECT_RECAP.md`: rekap proyek yang lebih detail
-- `LEARNING_CENTER.md`: catatan pembelajaran dan keputusan engineering
-- `SECURITY.md`: baseline keamanan project
-- `CONTRIBUTING.md`: alur kerja branch dan PR
-- `recap.md`: ringkasan kerja terbaru yang lebih operasional
+- status list dokumen dihitung sebagai `active`, `expiring_soon`, dan `expired`
+- sistem dokumen saat ini masih metadata-only
 
 ## Local Setup
 
@@ -60,8 +80,6 @@ cd backend
 bun install
 cp .env.example .env
 bun run prisma:generate
-bun run format:check
-bun run typecheck
 bun run dev
 ```
 
@@ -74,7 +92,7 @@ cp .env.example .env.local
 bun run dev
 ```
 
-## Validation
+## Validasi Lokal
 
 Backend:
 
@@ -95,32 +113,35 @@ bun run build
 
 ## GitHub Automation
 
-GitHub Actions berjalan otomatis pada:
+Workflow berjalan otomatis pada:
 
 - push ke `main`
 - push ke branch `feature/**`, `fix/**`, `chore/**`, dan `docs/**`
 - pull request ke `main`
 
-Deploy workflow:
+Required checks utama yang sedang dipakai:
 
-- `Deploy Staging`: manual via `workflow_dispatch`, hanya lanjut jika checks utama hijau
-- `Deploy Production`: manual via `workflow_dispatch`, hanya lanjut jika checks utama hijau dan staging sukses untuk SHA yang sama
+- `Backend`
+- `Frontend`
+- `CodeQL Analyze`
+- `Secret Scan`
+- `Dependency Scan`
 
-Pipeline notes:
+Deploy workflow saat ini:
 
-- `CI`, `CodeQL`, dan `Security` memakai concurrency agar run lama pada branch/PR yang sama dibatalkan saat ada push baru
-- required checks utama saat ini adalah `Backend`, `Frontend`, `CodeQL Analyze`, `Secret Scan`, dan `Dependency Scan`
+- `Deploy Staging`: manual via `workflow_dispatch`
+- `Deploy Production`: manual via `workflow_dispatch`
 
-## Security Notes
+Keduanya masih scaffold dan belum menjalankan deploy nyata ke provider final.
 
-- Jangan commit file `.env` asli.
-- Simpan secret production di provider deploy yang dipilih dan dashboard Neon.
-- Pertahankan Dependabot, CodeQL, secret scanning, dan dependency scanning tetap aktif.
-- Jika secret pernah terekspos, rotasi segera sebelum deploy ulang.
+## Fokus Implementasi Berikutnya
 
-## Recommended Next Steps
+Urutan yang paling masuk akal dari kondisi repo sekarang:
 
-1. Mulai bangun UI frontend Arsipin dengan login, dashboard summary, dan list dokumen.
-2. Tambahkan automated tests untuk auth, ownership, list filter, dan summary.
-3. Putuskan desain upload file arsip dan storage provider yang akan dipakai.
-4. Hubungkan workflow deploy ke provider hosting final.
+1. bangun UI auth frontend
+2. bangun dashboard summary frontend
+3. bangun halaman list/detail/manage dokumen
+4. sambungkan state auth frontend ke backend
+5. tambah automated tests backend
+6. putuskan desain upload file dan storage provider
+7. hubungkan deploy workflow ke target hosting final

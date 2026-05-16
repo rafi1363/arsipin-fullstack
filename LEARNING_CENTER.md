@@ -312,6 +312,33 @@ Istilah penting:
 - `operational complexity`
 - `premature optimization`
 
+### 14. Tooling lokal sebaiknya kompatibel dengan bash bawaan macOS
+
+Kasus yang terjadi:
+
+- script helper batch merge PR awal gagal di macOS
+- penyebabnya karena bash bawaan macOS masih versi lama dan tidak mendukung `declare -A`
+- percobaan berikutnya juga gagal karena `mapfile` tidak tersedia
+
+Pelajaran:
+
+- jangan mengasumsikan fitur `bash` modern tersedia di mesin macOS default
+- untuk helper lokal yang ingin ringan dipakai, utamakan kompatibilitas dengan `bash 3.2`
+- jika memang butuh fitur shell modern, dokumentasikan kebutuhan install `bash` versi baru sejak awal
+
+Praktik yang sehat:
+
+- pakai loop `while read` jika cukup
+- hindari associative array jika script ditujukan untuk portability
+- uji helper lokal di environment nyata pemilik repo, bukan hanya asumsi sintaks
+
+Istilah penting:
+
+- `bash 3.2`
+- `associative array`
+- `mapfile`
+- `portability`
+
 Masalah yang terjadi:
 
 - `bun run dev` gagal saat membuat `PrismaClient`

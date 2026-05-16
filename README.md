@@ -162,6 +162,36 @@ Mulai fase kerja ini, pola kolaborasi yang dipakai di repo adalah:
 - contoh kode dari AI dipakai sebagai panduan belajar dan referensi implementasi, bukan perubahan langsung ke source app
 - jika ada perubahan besar yang mengubah arah kerja, sinkronkan kembali ke `PROJECT_RECAP.md`, `LEARNING_CENTER.md`, dan `recap.md`
 
+## Helper Lokal PR
+
+Repo ini memiliki helper lokal di `.local-scripts/` untuk mempercepat workflow solo development.
+
+Yang saat ini dipakai:
+
+- `.local-scripts/pr-create.sh` untuk membuat PR dengan summary awal
+- `.local-scripts/pr-summary.sh` untuk membentuk ringkasan perubahan
+- `.local-scripts/pr-batch-merge.sh` untuk audit batch PR open dan merge hanya PR yang aman
+
+Command penting:
+
+```bash
+.local-scripts/pr-create.sh
+```
+
+```bash
+.local-scripts/pr-batch-merge.sh main --dry-run
+```
+
+```bash
+.local-scripts/pr-batch-merge.sh main --execute
+```
+
+Catatan:
+
+- helper batch merge tidak langsung merge semua PR hijau
+- script tetap meminta konfirmasi manual
+- PR yang overlap file dengan PR siap merge lain akan ditahan untuk ditinjau manual
+
 ## Rekomendasi Hosting Dan Penyimpanan File
 
 Untuk fase belajar yang tetap realistis secara operasional, stack yang paling seimbang saat ini:

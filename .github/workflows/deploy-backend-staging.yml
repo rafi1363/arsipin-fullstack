@@ -168,6 +168,10 @@ jobs:
           echo "Backend staging alias: https://$BACKEND_ALIAS"
 
       - name: Verify backend staging health
+        working-directory: backend
         env:
           BACKEND_ALIAS: ${{ vars.VERCEL_BACKEND_STAGING_ALIAS }}
-        run: vercel --token="${{ secrets.VERCEL_TOKEN }}" curl --yes "https://$BACKEND_ALIAS/health"
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel curl --yes "https://$BACKEND_ALIAS/health"

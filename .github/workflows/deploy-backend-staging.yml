@@ -170,4 +170,4 @@ jobs:
       - name: Verify backend staging health
         env:
           BACKEND_ALIAS: ${{ vars.VERCEL_BACKEND_STAGING_ALIAS }}
-        run: vercel --token="${{ secrets.VERCEL_TOKEN }}" curl "https://$BACKEND_ALIAS/health"
+        run: vercel --token="${{ secrets.VERCEL_TOKEN }}" curl --yes "https://$BACKEND_ALIAS/health"
